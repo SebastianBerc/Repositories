@@ -1,11 +1,11 @@
 {
   "name": "sebastian-berc/repositories",
-  "description": ":package_description",
+  "description": "Flexable Laravel ~5.0 Repository Library.",
   "keywords": [
     "league",
     "repository"
   ],
-  "homepage": "https://github.com/SebastianBerc/repositories",
+  "homepage": "https://github.com/SebastianBerc/Repositories",
   "license": "MIT",
   "authors": [
     {

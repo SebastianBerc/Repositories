@@ -2,30 +2,22 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/sebastian-berc/repositories.svg?style=flat-square)](https://packagist.org/packages/SebastianBerc/repository)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/SebastianBerc/repositories/master.svg?style=flat-square)](https://travis-ci.org/SebastianBerc/repositories)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/SebastianBerc/repositories.svg?style=flat-square)](https://scrutinizer-ci.com/g/SebastianBerc/repositories/code-structure)
-[![Quality Score](https://img.shields.io/scrutinizer/g/SebastianBerc/repositories.svg?style=flat-square)](https://scrutinizer-ci.com/g/SebastianBerc/repositories)
-[![Total Downloads](https://img.shields.io/packagist/dt/SebastianBerc/repositories.svg?style=flat-square)](https://packagist.org/packages/SebastianBerc/repositories)
-
-**Note:** Replace ```Sebastian Berć``` ```SebastianBerc``` ```http://sebastian-berc.pl/``` ```sebastian-berc@gmail.com``` ```repository``` ```Flexable Laravel 5.1 Repository.``` with their correct values in [README.md](README.md), [CHANGELOG.md](CHANGELOG.md), [CONTRIBUTING.md](CONTRIBUTING.md), [LICENSE.md](LICENSE.md) and [composer.json](composer.json) files, then delete this line.
-
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what
-PSRs you support to avoid any confusion with users and contributors.
+[![Build Status](https://img.shields.io/travis/SebastianBerc/Repositories/master.svg?style=flat-square)](https://travis-ci.org/SebastianBerc/Repositories)
+[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/SebastianBerc/Repositories.svg?style=flat-square)](https://scrutinizer-ci.com/g/SebastianBerc/Repositories/code-structure)
+[![Quality Score](https://img.shields.io/scrutinizer/g/SebastianBerc/Repositories.svg?style=flat-square)](https://scrutinizer-ci.com/g/SebastianBerc/Repositories)
+[![Total Downloads](https://img.shields.io/packagist/dt/sebastian-berc/repositories.svg?style=flat-square)](https://packagist.org/packages/sebastian-berc/repositories)
 
 ## Install
 
 Via Composer
 
 ``` bash
-$ composer require sebastian-berc/repository
+$ composer require sebastian-berc/repositories
 ```
 
 ## Usage
 
-``` php
-$skeleton = new SebastianBerc\Repositories\Repository();
-echo $skeleton->echoPhrase('Hello, League!');
-```
+Comming soon!
 
 ## Change log
 
