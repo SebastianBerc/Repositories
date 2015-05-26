@@ -1,11 +1,11 @@
-# repository
+# Repositories
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/SebastianBerc/repository.svg?style=flat-square)](https://packagist.org/packages/SebastianBerc/repository)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/sebastian-berc/repositories.svg?style=flat-square)](https://packagist.org/packages/SebastianBerc/repository)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/SebastianBerc/repository/master.svg?style=flat-square)](https://travis-ci.org/SebastianBerc/repository)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/SebastianBerc/repository.svg?style=flat-square)](https://scrutinizer-ci.com/g/SebastianBerc/repository/code-structure)
-[![Quality Score](https://img.shields.io/scrutinizer/g/SebastianBerc/repository.svg?style=flat-square)](https://scrutinizer-ci.com/g/SebastianBerc/repository)
-[![Total Downloads](https://img.shields.io/packagist/dt/SebastianBerc/repository.svg?style=flat-square)](https://packagist.org/packages/SebastianBerc/repository)
+[![Build Status](https://img.shields.io/travis/SebastianBerc/repositories/master.svg?style=flat-square)](https://travis-ci.org/SebastianBerc/repositories)
+[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/SebastianBerc/repositories.svg?style=flat-square)](https://scrutinizer-ci.com/g/SebastianBerc/repositories/code-structure)
+[![Quality Score](https://img.shields.io/scrutinizer/g/SebastianBerc/repositories.svg?style=flat-square)](https://scrutinizer-ci.com/g/SebastianBerc/repositories)
+[![Total Downloads](https://img.shields.io/packagist/dt/SebastianBerc/repositories.svg?style=flat-square)](https://packagist.org/packages/SebastianBerc/repositories)
 
 **Note:** Replace ```Sebastian Berć``` ```SebastianBerc``` ```http://sebastian-berc.pl/``` ```sebastian-berc@gmail.com``` ```repository``` ```Flexable Laravel 5.1 Repository.``` with their correct values in [README.md](README.md), [CHANGELOG.md](CHANGELOG.md), [CONTRIBUTING.md](CONTRIBUTING.md), [LICENSE.md](LICENSE.md) and [composer.json](composer.json) files, then delete this line.
 
