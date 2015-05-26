@@ -1,0 +1,45 @@
+{
+  "name": "sebastian-berc/repositories",
+  "description": ":package_description",
+  "keywords": [
+    "league",
+    "repository"
+  ],
+  "homepage": "https://github.com/SebastianBerc/repositories",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Sebastian Berć",
+      "email": "sebastian-berc@gmail.com",
+      "homepage": "http://sebastian-berc.pl/",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0",
+    "illuminate/contracts": "~5.0|~5.1",
+    "illuminate/database": "~5.0|~5.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.*",
+    "scrutinizer/ocular": "~1.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "SebastianBerc\\Repositories\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SebastianBerc\\Repositories\\Test\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  }
+}
