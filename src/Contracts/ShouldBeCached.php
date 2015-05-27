@@ -7,7 +7,7 @@
  *
  * @package SebastianBerc\Repositories\Contracts
  */
-class ShouldBeCached
+interface ShouldBeCached
 {
 
 }

@@ -5,7 +5,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Query\Builder;
-use SebastianBerc\Repositories\Contracts\Repositorable;
 use SebastianBerc\Repositories\Contracts\ShouldBeCached;
 use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
 use SebastianBerc\Repositories\Managers\CacheManager;
@@ -30,7 +29,7 @@ use SebastianBerc\Repositories\Traits\HasCriteria;
  * @method Eloquent             findBy($column, $value, array $columns = ['*'])
  * @method Eloquent             findWhere(array $wheres, array $columns = ['*'])
  */
-abstract class Repository implements Repositorable
+abstract class Repository
 {
     /**
      * Contains Laravel Application instance.
@@ -109,7 +108,7 @@ abstract class Repository implements Repositorable
         }
 
         return (new \ReflectionClass($this))->implementsInterface(
-            'App\Infrastructure\Repository\Contracts\ShouldBeCached'
+            'SebastianBerc\Repositories\Contracts\ShouldBeCached'
         );
     }
 
@@ -134,7 +133,7 @@ abstract class Repository implements Repositorable
      */
     public function __call($method, $args)
     {
-        if (!method_exists($this->manager(), Repositorable::class)) {
+        if (!method_exists($this->manager(), $method)) {
             throw new \BadMethodCallException();
         }
 
