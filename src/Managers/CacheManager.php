@@ -18,7 +18,7 @@ class CacheManager implements Repositorable
     /**
      * Contains the Eloquent model instance.
      *
-     * @var Eloquent|Builder Model instance.
+     * @var Eloquent Model instance.
      */
     protected $instance;
 
@@ -49,7 +49,7 @@ class CacheManager implements Repositorable
     /**
      * Return cache key for specified credentials.
      *
-     * @param string $suffix
+     * @param mixed $suffix
      *
      * @return string
      */
@@ -118,7 +118,7 @@ class CacheManager implements Repositorable
             $cacheKey,
             $this->lifetime,
             function () use ($column, $operator, $value, $boolean) {
-                return $this->manager()->where($column, $operator, $value, ['*']);
+                return $this->manager()->where($column, $operator, $value, $boolean);
             }
         );
     }
