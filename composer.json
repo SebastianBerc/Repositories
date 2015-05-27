@@ -1,0 +1,52 @@
+{
+  "name": "sebastian-berc/repositories",
+  "description": "Flexable Laravel ~5.0 Repository Library.",
+  "keywords": [
+    "league",
+    "repository"
+  ],
+  "homepage": "https://github.com/SebastianBerc/Repositories",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Sebastian Berć",
+      "email": "sebastian-berc@gmail.com",
+      "homepage": "http://sebastian-berc.pl/",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0",
+    "illuminate/contracts": "~5.0|~5.1",
+    "illuminate/database": "~5.0|~5.1"
+  },
+  "require-dev": {
+    "scrutinizer/ocular": "~1.1",
+    "phpunit/phpunit": "4.*",
+    "orchestra/testbench": "3.0.*",
+    "mockery/mockery": "^0.9.4",
+    "fzaninotto/faker": "^1.4",
+    "laracasts/testdummy": "^2.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "SebastianBerc\\Repositories\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SebastianBerc\\Repositories\\Test\\": "tests"
+    },
+    "classmap": [
+      "tests/migrations"
+    ]
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  }
+}
