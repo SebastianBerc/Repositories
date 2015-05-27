@@ -23,6 +23,7 @@ class RepositoryManager implements Repositorable
 
     /**
      * Create a new RepositoryManager instance.
+     * @param Eloquent $modelInstance
      */
     public function __construct($modelInstance)
     {
@@ -32,7 +33,7 @@ class RepositoryManager implements Repositorable
     /**
      * Get all of the models from the database.
      *
-     * @param array $columns
+     * @param string[] $columns
      *
      * @return Collection
      */
@@ -60,7 +61,7 @@ class RepositoryManager implements Repositorable
      * Paginate the given query.
      *
      * @param int   $perPage
-     * @param array $columns
+     * @param string[] $columns
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
@@ -87,7 +88,7 @@ class RepositoryManager implements Repositorable
      * @param mixed $identifier
      * @param array $attributes
      *
-     * @return Eloquent|null
+     * @return Eloquent
      */
     public function update($identifier, array $attributes = [])
     {
@@ -102,7 +103,7 @@ class RepositoryManager implements Repositorable
      *
      * @param int $identifier
      *
-     * @return bool
+     * @return boolean|null
      */
     public function delete($identifier)
     {
@@ -113,7 +114,7 @@ class RepositoryManager implements Repositorable
      * Find a model by its primary key.
      *
      * @param int   $identifier
-     * @param array $columns
+     * @param string[] $columns
      *
      * @return Eloquent
      */
@@ -127,7 +128,7 @@ class RepositoryManager implements Repositorable
      *
      * @param mixed $column
      * @param mixed $value
-     * @param array $columns
+     * @param string[] $columns
      *
      * @return Eloquent
      */
@@ -140,7 +141,7 @@ class RepositoryManager implements Repositorable
      * Find a model by its specified columns and values.
      *
      * @param array $wheres
-     * @param array $columns
+     * @param string[] $columns
      *
      * @return Eloquent
      */
