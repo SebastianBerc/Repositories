@@ -108,7 +108,7 @@ class CacheRepositoryTest extends TestCase
         $this->repository->findBy('email', $model->email);
 
         $finded   = $this->repository->findBy('email', $model->email);
-        $cacheKey = 'users.' . md5(serialize(['column' => 'email', 'value' => $model->email]));
+        $cacheKey = 'users.' . md5(serialize(['email' => $model->email]));
 
         $this->assertTrue($this->cache->has($cacheKey));
         $this->assertEquals($finded, $this->cache->get($cacheKey));

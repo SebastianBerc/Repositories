@@ -236,15 +236,7 @@ class CacheManager implements Repositorable
      */
     public function findBy($column, $value, array $columns = ['*'])
     {
-        $cacheKey = $this->cacheKey(compact('column', 'value'));
-
-        if ($this->cache->has($cacheKey)) {
-            return $this->cache->get($cacheKey);
-        }
-
-        return $this->cache->remember($cacheKey, $this->lifetime, function () use ($column, $value, $columns) {
-            return $this->manager()->findBy($column, $value, $columns);
-        });
+        return $this->findWhere([$column => $value], $columns);
     }
 
     /**
