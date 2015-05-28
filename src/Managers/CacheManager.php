@@ -236,7 +236,7 @@ class CacheManager implements Repositorable
      */
     public function findBy($column, $value, array $columns = ['*'])
     {
-        return $this->findWhere([$column => $value], $columns);
+        return $this->where([$column => $value])->first($columns);
     }
 
     /**
@@ -249,14 +249,6 @@ class CacheManager implements Repositorable
      */
     public function findWhere(array $wheres, array $columns = ['*'])
     {
-        $cacheKey = $this->cacheKey($wheres);
-
-        if ($this->cache->has($cacheKey)) {
-            return $this->cache->get($cacheKey);
-        }
-
-        return $this->cache->remember($cacheKey, $this->lifetime, function () use ($wheres, $columns) {
-            return $this->manager()->findWhere($wheres, $columns);
-        });
+        return $this->where($wheres)->first($columns);
     }
 }
