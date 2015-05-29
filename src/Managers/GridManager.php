@@ -1,8 +1,8 @@
 <?php namespace SebastianBerc\Repositories\Managers;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 use SebastianBerc\Repositories\Contracts\Gridable;
 
 /**

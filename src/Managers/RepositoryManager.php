@@ -16,6 +16,13 @@ use SebastianBerc\Repositories\Contracts\Repositorable;
 class RepositoryManager implements Repositorable
 {
     /**
+     * Contains Laravel Application instance.
+     *
+     * @var Application
+     */
+    protected $app;
+
+    /**
      * Contains Eloquent model instance.
      *
      * @var Eloquent Model instance.
@@ -49,10 +56,10 @@ class RepositoryManager implements Repositorable
     /**
      * Create a new basic where query clause on model.
      *
-     * @param string $column
-     * @param string $operator
-     * @param mixed  $value
-     * @param string $boolean
+     * @param string|array $column
+     * @param string       $operator
+     * @param mixed        $value
+     * @param string       $boolean
      *
      * @return Builder
      */

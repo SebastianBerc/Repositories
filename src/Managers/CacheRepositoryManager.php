@@ -16,6 +16,13 @@ use SebastianBerc\Repositories\Contracts\Repositorable;
 class CacheRepositoryManager implements Repositorable
 {
     /**
+     * Contains Laravel Application instance.
+     *
+     * @var Application
+     */
+    protected $app;
+
+    /**
      * Contains the Eloquent model instance.
      *
      * @var Eloquent Model instance.
@@ -35,13 +42,6 @@ class CacheRepositoryManager implements Repositorable
      * @var int
      */
     protected $lifetime;
-
-    /**
-     * Contains Laravel Application instance.
-     *
-     * @var Application
-     */
-    private $app;
 
     /**
      * Create a new CacheRepositoryManager instance.
@@ -110,10 +110,10 @@ class CacheRepositoryManager implements Repositorable
     /**
      * Create a new basic where query clause on model.
      *
-     * @param string $column
-     * @param string $operator
-     * @param mixed  $value
-     * @param string $boolean
+     * @param string|array $column
+     * @param string       $operator
+     * @param mixed        $value
+     * @param string       $boolean
      *
      * @return Builder
      */
