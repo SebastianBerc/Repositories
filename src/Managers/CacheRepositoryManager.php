@@ -46,8 +46,8 @@ class CacheRepositoryManager implements Repositorable
     /**
      * Create a new CacheRepositoryManager instance.
      *
-     * @var Application $app
-     * @var Eloquent    $modelInstance
+     * @param Application $app
+     * @param Eloquent    $modelInstance
      */
     public function __construct(Application $app, $modelInstance)
     {
