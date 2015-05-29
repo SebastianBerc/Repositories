@@ -2,10 +2,9 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
+use SebastianBerc\Repositories\Contracts\MayHaveGrid;
 use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
 use SebastianBerc\Repositories\Repository;
-use SebastianBerc\Repositories\Traits\MayHaveGrid;
 
 /**
  * Class GridRepositoryTest
@@ -115,10 +114,8 @@ class GridRepositoryTest extends TestCase
     }
 }
 
-class GridRepositoryStub extends Repository
+class GridRepositoryStub extends Repository implements MayHaveGrid
 {
-    use MayHaveGrid;
-
     public function takeModel()
     {
         return User::class;

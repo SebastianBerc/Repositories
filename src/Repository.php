@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Query\Builder;
 use SebastianBerc\Repositories\Contracts\ShouldBeCached;
+use SebastianBerc\Repositories\Contracts\MayHaveGrid;
 use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
+use SebastianBerc\Repositories\Managers\CacheGridManager;
 use SebastianBerc\Repositories\Managers\CacheRepositoryManager;
+use SebastianBerc\Repositories\Managers\GridManager;
 use SebastianBerc\Repositories\Managers\RepositoryManager;
-use SebastianBerc\Repositories\Traits\MayHaveGrid;
 
 /**
  * Class Repositories
@@ -89,6 +91,10 @@ abstract class Repository
      */
     protected function manager()
     {
+        if ($this->mayHaveGrid()) {
+            return new GridManager($this->app, $this->instance);
+        }
+
         return new RepositoryManager($this->app, $this->instance);
     }
 
@@ -99,6 +105,10 @@ abstract class Repository
      */
     protected function cache()
     {
+        if ($this->mayHaveGrid()) {
+            return new CacheGridManager($this->app, $this->instance);
+        }
+
         return new CacheRepositoryManager($this->app, $this->instance);
     }
 
@@ -123,7 +133,11 @@ abstract class Repository
      */
     protected function mayHaveGrid()
     {
-        return in_array(MayHaveGrid::class, (new \ReflectionClass($this))->getTraitNames());
+        if ($this instanceof MayHaveGrid) {
+            return true;
+        }
+
+        return (new \ReflectionClass($this))->implementsInterface(MayHaveGrid::class);
     }
 
     /**
@@ -153,15 +167,7 @@ abstract class Repository
      */
     protected function isManagerMethod($method)
     {
-        $exists = false;
-
-        if ($this->mayHaveGrid() && method_exists($this, 'gridManager')) {
-            $exists |= method_exists($this->gridManager(), $method);
-        }
-
-        $exists |= method_exists($this->manager(), $method);
-
-        return $exists;
+        return method_exists($this->manager(), $method);
     }
 
     /**
@@ -174,17 +180,6 @@ abstract class Repository
      */
     protected function delegateToManager($method, $args)
     {
-        if ($this->mayHaveGrid()
-            && method_exists($this, 'gridManager')
-            && method_exists($this->gridManager(), $method)
-        ) {
-            if ($this->shouldBeCached() && method_exists($this, 'gridCache')) {
-                return call_user_func_array([$this->gridCache(), $method], $args);
-            }
-
-            return call_user_func_array([$this->gridManager(), $method], $args);
-        }
-
         if ($this->shouldBeCached()) {
             return call_user_func_array([$this->cache(), $method], $args);
         }
