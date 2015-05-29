@@ -7,16 +7,18 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Query\Builder;
 use SebastianBerc\Repositories\Contracts\ShouldBeCached;
 use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
-use SebastianBerc\Repositories\Managers\CacheManager;
+use SebastianBerc\Repositories\Managers\CacheRepositoryManager;
 use SebastianBerc\Repositories\Managers\RepositoryManager;
+use SebastianBerc\Repositories\Traits\MayHaveGrid;
 
 /**
  * Class Repositories
  *
- * @author  Sebastian Berć <sebastian.berc@gmail.com>
+ * @author    Sebastian Berć <sebastian.berc@gmail.com>
+ * @copyright Copyright (c) Sebastian Berć
+ * @package   SebastianBerc\Repositories
  *
- * @package SebastianBerc\Repositories
- *
+ * @see    RepositoryManager
  * @method static               applyCriteria()
  * @method Collection           all(array $columns = ['*'])
  * @method Builder              where($column, $operator = '=', $value = null, $boolean = 'and')
@@ -27,6 +29,10 @@ use SebastianBerc\Repositories\Managers\RepositoryManager;
  * @method Eloquent             find($identifier, array $columns = ['*'])
  * @method Eloquent             findBy($column, $value, array $columns = ['*'])
  * @method Eloquent             findWhere(array $wheres, array $columns = ['*'])
+ *
+ * @see    GridManager
+ * @method LengthAwarePaginator fetch($page, $perPage = 15, $filter = [], $sort = [], $columns = ['*'])
+ * @method int                  count()
  */
 abstract class Repository
 {
@@ -83,17 +89,17 @@ abstract class Repository
      */
     protected function manager()
     {
-        return new RepositoryManager($this->instance);
+        return new RepositoryManager($this->app, $this->instance);
     }
 
     /**
-     * Return a new CacheManager instance.
+     * Return a new CacheRepositoryManager instance.
      *
-     * @return CacheManager
+     * @return CacheRepositoryManager
      */
     protected function cache()
     {
-        return new CacheManager($this->app, $this->instance);
+        return new CacheRepositoryManager($this->app, $this->instance);
     }
 
     /**
@@ -107,9 +113,17 @@ abstract class Repository
             return true;
         }
 
-        return (new \ReflectionClass($this))->implementsInterface(
-            'SebastianBerc\Repositories\Contracts\ShouldBeCached'
-        );
+        return (new \ReflectionClass($this))->implementsInterface(ShouldBeCached::class);
+    }
+
+    /**
+     * Determine if the repository may have grid.
+     *
+     * @return bool
+     */
+    protected function mayHaveGrid()
+    {
+        return in_array(MayHaveGrid::class, (new \ReflectionClass($this))->getTraitNames());
     }
 
     /**
@@ -123,8 +137,52 @@ abstract class Repository
      */
     public function __call($method, $args)
     {
-        if (!method_exists($this->manager(), $method)) {
-            throw new \BadMethodCallException();
+        if ($this->isManagerMethod($method)) {
+            return $this->delegateToManager($method, $args);
+        }
+
+        throw new \BadMethodCallException();
+    }
+
+    /**
+     * Determine if dynamicaly method belongs to managers.
+     *
+     * @param string $method
+     *
+     * @return bool
+     */
+    protected function isManagerMethod($method)
+    {
+        $exists = false;
+
+        if ($this->mayHaveGrid() && method_exists($this, 'gridManager')) {
+            $exists |= method_exists($this->gridManager(), $method);
+        }
+
+        $exists |= method_exists($this->manager(), $method);
+
+        return $exists;
+    }
+
+    /**
+     * Delegates method execution to proper manager.
+     *
+     * @param string $method
+     * @param array  $args
+     *
+     * @return mixed
+     */
+    protected function delegateToManager($method, $args)
+    {
+        if ($this->mayHaveGrid()
+            && method_exists($this, 'gridManager')
+            && method_exists($this->gridManager(), $method)
+        ) {
+            if ($this->shouldBeCached() && method_exists($this, 'gridCache')) {
+                return call_user_func_array([$this->gridCache(), $method], $args);
+            }
+
+            return call_user_func_array([$this->gridManager(), $method], $args);
         }
 
         if ($this->shouldBeCached()) {

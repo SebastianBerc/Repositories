@@ -3,9 +3,9 @@
 /**
  * Class InvalidRepositoryModel
  *
- * @author  Sebastian Berć <sebastian.berc@gmail.com>
- *
- * @package SebastianBerc\Repositories\Exceptions
+ * @author    Sebastian Berć <sebastian.berc@gmail.com>
+ * @copyright Copyright (c) Sebastian Berć
+ * @package   SebastianBerc\Repositories\Exceptions
  */
 class InvalidRepositoryModel extends \Exception
 {

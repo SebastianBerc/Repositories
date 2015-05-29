@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use SebastianBerc\Repositories\Contracts\Repositorable;
 
 /**
- * Class CacheManager
+ * Class CacheRepositoryManager
  *
- * @author  Sebastian Berć <sebastian.berc@gmail.com>
- *
- * @package SebastianBerc\Repositories\Managers
+ * @author    Sebastian Berć <sebastian.berc@gmail.com>
+ * @copyright Copyright (c) Sebastian Berć
+ * @package   SebastianBerc\Repositories\Managers
  */
-class CacheManager implements Repositorable
+class CacheRepositoryManager implements Repositorable
 {
     /**
      * Contains the Eloquent model instance.
@@ -37,13 +37,21 @@ class CacheManager implements Repositorable
     protected $lifetime;
 
     /**
-     * Create a new CacheManager instance.
+     * Contains Laravel Application instance.
+     *
+     * @var Application
+     */
+    private $app;
+
+    /**
+     * Create a new CacheRepositoryManager instance.
      *
      * @var Application $app
      * @var Eloquent    $modelInstance
      */
     public function __construct(Application $app, $modelInstance)
     {
+        $this->app      = $app;
         $this->instance = $modelInstance;
         $this->cache    = $app->make('cache.store');
         $this->lifetime = $app->make('config')['cache.lifetime'] ?: 30;
@@ -78,7 +86,7 @@ class CacheManager implements Repositorable
      */
     protected function manager()
     {
-        return new RepositoryManager($this->instance);
+        return new RepositoryManager($this->app, $this->instance);
     }
 
     /**

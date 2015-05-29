@@ -9,9 +9,9 @@ use SebastianBerc\Repositories\Repository;
 /**
  * Class CacheRepositoryTest
  *
- * @author  Sebastian Berć <sebastian.berc@gmail.com>
- *
- * @package SebastianBerc\Repositories\Test
+ * @author    Sebastian Berć <sebastian.berc@gmail.com>
+ * @copyright Copyright (c) Sebastian Berć
+ * @package   SebastianBerc\Repositories\Test
  */
 class CacheRepositoryTest extends TestCase
 {

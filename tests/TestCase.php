@@ -6,9 +6,9 @@ use Laracasts\TestDummy\Factory as TestDummy;
 /**
  * Class TestCase
  *
- * @author  Sebastian Berć <sebastian.berc@gmail.com>
- *
- * @package SebastianBerc\Repositories\Test
+ * @author    Sebastian Berć <sebastian.berc@gmail.com>
+ * @copyright Copyright (c) Sebastian Berć
+ * @package   SebastianBerc\Repositories\Test
  */
 class TestCase extends \Orchestra\Testbench\TestCase
 {

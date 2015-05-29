@@ -1,5 +1,6 @@
 <?php namespace SebastianBerc\Repositories\Managers;
 
+use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -8,9 +9,9 @@ use SebastianBerc\Repositories\Contracts\Repositorable;
 /**
  * Class RepositoryManager
  *
- * @author  Sebastian Berć <sebastian.berc@gmail.com>
- *
- * @package SebastianBerc\Repositories\Managers
+ * @author    Sebastian Berć <sebastian.berc@gmail.com>
+ * @copyright Copyright (c) Sebastian Berć
+ * @package   SebastianBerc\Repositories\Managers
  */
 class RepositoryManager implements Repositorable
 {
@@ -23,10 +24,13 @@ class RepositoryManager implements Repositorable
 
     /**
      * Create a new RepositoryManager instance.
-     * @param Eloquent $modelInstance
+     *
+     * @param Application $app
+     * @param Eloquent    $modelInstance
      */
-    public function __construct($modelInstance)
+    public function __construct($app, $modelInstance)
     {
+        $this->app      = $app;
         $this->instance = $modelInstance;
     }
 
@@ -60,7 +64,7 @@ class RepositoryManager implements Repositorable
     /**
      * Paginate the given query.
      *
-     * @param int   $perPage
+     * @param int      $perPage
      * @param string[] $columns
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
@@ -113,7 +117,7 @@ class RepositoryManager implements Repositorable
     /**
      * Find a model by its primary key.
      *
-     * @param int   $identifier
+     * @param int      $identifier
      * @param string[] $columns
      *
      * @return Eloquent
@@ -126,8 +130,8 @@ class RepositoryManager implements Repositorable
     /**
      * Find a model by its specified column and value.
      *
-     * @param mixed $column
-     * @param mixed $value
+     * @param mixed    $column
+     * @param mixed    $value
      * @param string[] $columns
      *
      * @return Eloquent
@@ -140,7 +144,7 @@ class RepositoryManager implements Repositorable
     /**
      * Find a model by its specified columns and values.
      *
-     * @param array $wheres
+     * @param array    $wheres
      * @param string[] $columns
      *
      * @return Eloquent

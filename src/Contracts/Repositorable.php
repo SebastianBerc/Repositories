@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 /**
  * Interface Repositorable
  *
- * @author  Sebastian Berć <sebastian.berc@gmail.com>
- *
- * @package SebastianBerc\Repositories\Contracts
+ * @author    Sebastian Berć <sebastian.berc@gmail.com>
+ * @copyright Copyright (c) Sebastian Berć
+ * @package   SebastianBerc\Repositories\Contracts
  */
 interface Repositorable
 {
