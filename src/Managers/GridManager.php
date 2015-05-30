@@ -36,7 +36,7 @@ class GridManager extends RepositoryManager implements Gridable
         }
 
         $options = [
-            'path' => $this->app->make('request')->url(),
+            'path'  => $this->app->make('request')->url(),
             'query' => compact('page', 'perPage')
         ];
 
@@ -146,11 +146,11 @@ class GridManager extends RepositoryManager implements Gridable
         $relationClass = $this->instance->$relation();
 
         $this->instance = $this->instance->with($relation)->join(
-                $relationClass->getModel()->getTable() . ' as ' . $relation,
-                $relation . '.' . $this->instance->getForeignKey(),
-                '=',
-                $relationClass->getQualifiedParentKeyName()
-            )
+            $relationClass->getModel()->getTable() . ' as ' . $relation,
+            $relation . '.' . $this->instance->getForeignKey(),
+            '=',
+            $relationClass->getQualifiedParentKeyName()
+        )
             ->orderBy("{$relation}.{$column}", $direction)
             ->select($this->instance->getTable() . '.*');
 

@@ -114,7 +114,13 @@ class CacheRepositoryTest extends TestCase
         $this->repository->findBy('email', $model->email);
 
         $finded   = $this->repository->findBy('email', $model->email);
-        $wheres   = ['column' => ['email' => $model->email], 'operator' => '=', 'value' => null, 'boolean' => 'and'];
+        $wheres   = [
+            'column'   => ['email' => $model->email],
+            'operator' => '=',
+            'value'    => null,
+            'boolean'  => 'and',
+            'columns'  => ['*']
+        ];
         $cacheKey = 'users.' . md5(serialize($wheres));
 
         $this->assertTrue($this->cache->has($cacheKey));
@@ -132,7 +138,7 @@ class CacheRepositoryTest extends TestCase
         $this->repository->findWhere($wheres = ['email' => $model->email, 'password' => 'secret']);
 
         $finded   = $this->repository->findWhere($wheres = ['email' => $model->email, 'password' => 'secret']);
-        $wheres   = ['column' => $wheres, 'operator' => '=', 'value' => null, 'boolean' => 'and'];
+        $wheres   = ['column' => $wheres, 'operator' => '=', 'value' => null, 'boolean' => 'and', 'columns' => ['*']];
         $cacheKey = 'users.' . md5(serialize($wheres));
 
         $this->assertTrue($this->cache->has($cacheKey));
@@ -150,7 +156,13 @@ class CacheRepositoryTest extends TestCase
 
         /** @var Collection $finded */
         $finded   = $this->repository->where('password', '=', 'secret', 'and');
-        $wheres   = array_combine(['column', 'operator', 'value', 'boolean'], ['password', '=', 'secret', 'and']);
+        $wheres   = [
+            'column'   => 'password',
+            'operator' => '=',
+            'value'    => 'secret',
+            'boolean'  => 'and',
+            'columns'  => ['*']
+        ];
         $cacheKey = 'users.' . md5(serialize($wheres));
 
         $this->assertTrue($this->cache->has($cacheKey));

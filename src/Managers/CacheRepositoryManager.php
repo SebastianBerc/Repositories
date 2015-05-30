@@ -1,7 +1,6 @@
 <?php namespace SebastianBerc\Repositories\Managers;
 
 use Illuminate\Contracts\Container\Container as Application;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use SebastianBerc\Repositories\Contracts\Repositorable;
@@ -80,6 +79,24 @@ class CacheRepositoryManager implements Repositorable
     }
 
     /**
+     * Call method on manager, and store results in cache.
+     *
+     * @param string $cacheKey
+     * @param int    $lifetime
+     * @param array  $arguments
+     *
+     * @return mixed
+     */
+    protected function store($cacheKey, $lifetime, array $arguments = [])
+    {
+        $method = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2)[1]["function"];
+
+        return $this->cache->remember($cacheKey, $lifetime, function () use ($method, $arguments) {
+            return call_user_func_array([$this->manager(), $method], $arguments);
+        });
+    }
+
+    /**
      * Return a new instance of RepositoryManager.
      *
      * @return RepositoryManager
@@ -98,13 +115,13 @@ class CacheRepositoryManager implements Repositorable
      */
     public function all(array $columns = ['*'])
     {
-        if ($this->cache->has($this->cacheKey())) {
-            return $this->cache->get($this->cacheKey());
+        $cacheKey = ($columns == ['*'] ? $this->cacheKey() : $this->cacheKey($columns));
+
+        if ($this->cache->has($cacheKey)) {
+            return $this->cache->get($cacheKey);
         }
 
-        return $this->cache->remember($this->cacheKey(), $this->lifetime, function () use ($columns) {
-            return $this->manager()->all($columns);
-        });
+        return $this->store($cacheKey, $this->lifetime, func_get_args());
     }
 
     /**
@@ -119,19 +136,13 @@ class CacheRepositoryManager implements Repositorable
      */
     public function where($column, $operator = '=', $value = null, $boolean = 'and', array $columns = ['*'])
     {
-        $cacheKey = $this->cacheKey(compact('column', 'operator', 'value', 'boolean'));
+        $cacheKey = $this->cacheKey(compact('column', 'operator', 'value', 'boolean', 'columns'));
 
         if ($this->cache->has($cacheKey)) {
             return $this->cache->get($cacheKey);
         }
 
-        return $this->cache->remember(
-            $cacheKey,
-            $this->lifetime,
-            function () use ($column, $operator, $value, $boolean, $columns) {
-                return $this->manager()->where($column, $operator, $value, $boolean, $columns);
-            }
-        );
+        return $this->store($cacheKey, $this->lifetime, func_get_args());
     }
 
     /**
@@ -150,9 +161,7 @@ class CacheRepositoryManager implements Repositorable
             return $this->cache->get($cacheKey);
         }
 
-        return $this->cache->remember($cacheKey, $this->lifetime, function () use ($perPage, $columns) {
-            return $this->manager()->paginate($perPage, $columns);
-        });
+        return $this->store($cacheKey, $this->lifetime, func_get_args());
     }
 
     /**
@@ -213,7 +222,6 @@ class CacheRepositoryManager implements Repositorable
     public function delete($identifier)
     {
         $instance = $this->manager()->find($identifier);
-
         $cacheKey = $this->cacheKey($instance->getKey());
 
         $this->cache->forget($cacheKey);
@@ -231,16 +239,13 @@ class CacheRepositoryManager implements Repositorable
      */
     public function find($identifier, array $columns = ['*'])
     {
-        if ($this->cache->has($this->cacheKey($identifier))) {
-            return $this->cache->get($this->cacheKey($identifier));
+        $cacheKey = $this->cacheKey($identifier);
+
+        if ($this->cache->has($cacheKey)) {
+            return $this->cache->get($cacheKey);
         }
 
-        return $this->cache->remember(
-            $this->cacheKey($identifier), $this->lifetime,
-            function () use ($identifier, $columns) {
-                return $this->manager()->find($identifier, $columns);
-            }
-        );
+        return $this->store($cacheKey, $this->lifetime, func_get_args());
     }
 
     /**
