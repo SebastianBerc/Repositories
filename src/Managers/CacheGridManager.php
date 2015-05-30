@@ -10,8 +10,18 @@ use SebastianBerc\Repositories\Contracts\Gridable;
  * @copyright Copyright (c) Sebastian Berć
  * @package   SebastianBerc\Repositories\Managers
  */
-class CacheGridManager extends CacheRepositoryManager implements Gridable
+class CacheGridManager extends CacheRepositoryManager
 {
+    /**
+     * Return a new instance of RepositoryManager.
+     *
+     * @return GridManager
+     */
+    protected function manager()
+    {
+        return new GridManager($this->app, $this->instance);
+    }
+
     /**
      * Fetch collection ordered and filtrated by specified columns for specified page.
      *
@@ -25,92 +35,36 @@ class CacheGridManager extends CacheRepositoryManager implements Gridable
      */
     public function fetch($page, $perPage = 15, array $filter = [], array $sort = [], array $columns = ['*'])
     {
-        // TODO: Implement fetch() method.
+        $cacheKey = $this->cacheKey(compact('page', 'perPage', 'filter', 'sort'));
+
+        if ($this->cache->has($cacheKey)) {
+            return $this->cache->get($cacheKey);
+        }
+
+        return $this->cache->remember(
+            $cacheKey,
+            $this->lifetime,
+            function () use ($page, $perPage, $filter, $sort, $columns) {
+                return $this->manager()->fetch($page, $perPage, $filter, $sort, $columns);
+            }
+        );
     }
 
     /**
-     * Returns total count of whole collection.
+     * Dynamicly call methods on grid manager.
      *
-     * @return int
+     * @param string $method
+     * @param array  $args
+     *
+     * @return mixed
+     * @throws \BadMethodCallException
      */
-    public function count()
+    public function __call($method, $args)
     {
-        // TODO: Implement count() method.
-    }
+        if (method_exists($this->manager(), $method)) {
+            return call_user_func_array([$this->manager(), $method], $args);
+        }
 
-    /**
-     * Append column filter to query builder.
-     *
-     * @param string|array $column
-     * @param string       $value
-     *
-     * @return $this
-     */
-    public function filterBy($column, $value = null)
-    {
-        // TODO: Implement filterBy() method.
-    }
-
-    /**
-     * Append relation column filter to query builder.
-     *
-     * @param string $column
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function filterByRelation($column, $value = null)
-    {
-        // TODO: Implement filterByRelation() method.
-    }
-
-    /**
-     * Append many column filters to query builder.
-     *
-     * @param array $columns
-     *
-     * @return $this
-     */
-    public function multiFilterBy(array $columns)
-    {
-        // TODO: Implement multiFilterBy() method.
-    }
-
-    /**
-     * Append column sorting to query builder.
-     *
-     * @param string|array $column
-     * @param string       $direction
-     *
-     * @return $this
-     */
-    public function sortBy($column, $direction = 'ASC')
-    {
-        // TODO: Implement sortBy() method.
-    }
-
-    /**
-     * Append relation column sorting to query builder.
-     *
-     * @param string|array $column
-     * @param string       $direction
-     *
-     * @return $this
-     */
-    public function sortByRelation($column, $direction = 'ASC')
-    {
-        // TODO: Implement sortByRelation() method.
-    }
-
-    /**
-     * Append many column sorting to query builder.
-     *
-     * @param array $columns
-     *
-     * @return $this
-     */
-    public function multiSortBy(array $columns)
-    {
-        // TODO: Implement multiSortBy() method.
+        throw new \BadMethodCallException();
     }
 }
