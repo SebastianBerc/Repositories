@@ -164,12 +164,7 @@ class CacheRepositoryManager implements Repositorable
      */
     public function create(array $attributes = [])
     {
-        $instance = $this->manager()->create($attributes);
-        $cacheKey = $this->cacheKey($instance->getKey());
-
-        return $this->cache->remember($cacheKey, $this->lifetime, function () use ($instance) {
-            return $instance;
-        });
+        return $this->createOrUpdate(null, $attributes);
     }
 
     /**
@@ -182,7 +177,22 @@ class CacheRepositoryManager implements Repositorable
      */
     public function update($identifier, array $attributes = [])
     {
-        $instance = $this->manager()->update($identifier, $attributes);
+        return $this->createOrUpdate($identifier, $attributes);
+    }
+
+    /**
+     * Create or update the model in the database.
+     *
+     * @param int|null $identifier
+     * @param array    $attributes
+     *
+     * @return mixed
+     */
+    protected function createOrUpdate($identifier = null, array $attributes = [])
+    {
+        $instance = !is_null($identifier)
+            ? $this->manager()->update($identifier, $attributes)
+            : $this->manager()->create($attributes);
 
         $cacheKey = $this->cacheKey($instance->getKey());
 
@@ -203,6 +213,7 @@ class CacheRepositoryManager implements Repositorable
     public function delete($identifier)
     {
         $instance = $this->manager()->find($identifier);
+
         $cacheKey = $this->cacheKey($instance->getKey());
 
         $this->cache->forget($cacheKey);

@@ -31,6 +31,12 @@ class GridRepositoryTest extends TestCase
     }
 
     /** @test */
+    public function itShouldReturnRepositoryInstance()
+    {
+        $this->assertEquals(GridRepositoryStub::class, get_class(GridRepositoryStub::instance()));
+    }
+
+    /** @test */
     public function itShouldFetchFirstCollectionPageFromDatabase()
     {
         $this->factory()->times(20)->create(User::class);

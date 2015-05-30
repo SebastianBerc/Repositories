@@ -31,6 +31,12 @@ class RepositoryTest extends TestCase
     }
 
     /** @test */
+    public function itShouldReturnRepositoryInstance()
+    {
+        $this->assertEquals(RepositoryStub::class, get_class(RepositoryStub::instance()));
+    }
+
+    /** @test */
     public function itShouldReturnAllRecordsFromDatabase()
     {
         $this->factory()->times(5)->create(ModelStub::class);

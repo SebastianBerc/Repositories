@@ -37,6 +37,12 @@ class CacheRepositoryTest extends TestCase
     }
 
     /** @test */
+    public function itShouldReturnRepositoryInstance()
+    {
+        $this->assertEquals(CacheRepositoryStub::class, get_class(CacheRepositoryStub::instance()));
+    }
+
+    /** @test */
     public function itShouldReturnAllRecordsFromCache()
     {
         $this->factory()->times(5)->create(ModelStub::class);
