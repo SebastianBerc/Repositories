@@ -182,8 +182,7 @@ class CacheRepositoryManager implements Repositorable
      */
     public function update($identifier, array $attributes = [])
     {
-        $instance = $this->manager()->find($identifier);
-        $instance->update($attributes);
+        $instance = $this->manager()->update($identifier, $attributes);
 
         $cacheKey = $this->cacheKey($instance->getKey());
 

@@ -103,8 +103,13 @@ class RepositoryManager implements Repositorable
      */
     public function update($identifier, array $attributes = [])
     {
-        $instance = $this->find($identifier);
-        $instance->update($attributes);
+        $instance = ($identifier instanceof Eloquent ? $identifier : $this->find($identifier));
+
+        $instance->fill($attributes);
+
+        if ($instance->isDirty()) {
+            $instance->save();
+        }
 
         return $instance;
     }
