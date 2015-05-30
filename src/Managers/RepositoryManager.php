@@ -60,12 +60,13 @@ class RepositoryManager implements Repositorable
      * @param string       $operator
      * @param mixed        $value
      * @param string       $boolean
+     * @param string[]     $columns
      *
-     * @return Builder
+     * @return Collection
      */
-    public function where($column, $operator = '=', $value = null, $boolean = 'and')
+    public function where($column, $operator = '=', $value = null, $boolean = 'and', array $columns = ['*'])
     {
-        return $this->instance->where($column, $operator, $value, $boolean);
+        return $this->instance->where($column, $operator, $value, $boolean, $columns)->get();
     }
 
     /**

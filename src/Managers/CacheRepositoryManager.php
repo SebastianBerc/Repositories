@@ -92,7 +92,7 @@ class CacheRepositoryManager implements Repositorable
     /**
      * Get all of the models from the database.
      *
-     * @param array $columns
+     * @param string[] $columns
      *
      * @return Collection
      */
@@ -115,9 +115,9 @@ class CacheRepositoryManager implements Repositorable
      * @param mixed        $value
      * @param string       $boolean
      *
-     * @return Builder
+     * @return Collection
      */
-    public function where($column, $operator = '=', $value = null, $boolean = 'and')
+    public function where($column, $operator = '=', $value = null, $boolean = 'and', array $columns = ['*'])
     {
         $cacheKey = $this->cacheKey(compact('column', 'operator', 'value', 'boolean'));
 
@@ -128,8 +128,8 @@ class CacheRepositoryManager implements Repositorable
         return $this->cache->remember(
             $cacheKey,
             $this->lifetime,
-            function () use ($column, $operator, $value, $boolean) {
-                return $this->manager()->where($column, $operator, $value, $boolean);
+            function () use ($column, $operator, $value, $boolean, $columns) {
+                return $this->manager()->where($column, $operator, $value, $boolean, $columns);
             }
         );
     }
@@ -137,8 +137,8 @@ class CacheRepositoryManager implements Repositorable
     /**
      * Paginate the given query.
      *
-     * @param int   $perPage
-     * @param array $columns
+     * @param int      $perPage
+     * @param string[] $columns
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
@@ -224,8 +224,8 @@ class CacheRepositoryManager implements Repositorable
     /**
      * Find a model by its primary key.
      *
-     * @param int   $identifier
-     * @param array $columns
+     * @param int      $identifier
+     * @param string[] $columns
      *
      * @return Eloquent
      */
@@ -246,27 +246,27 @@ class CacheRepositoryManager implements Repositorable
     /**
      * Find a model by its specified column and value.
      *
-     * @param mixed $column
-     * @param mixed $value
-     * @param array $columns
+     * @param mixed    $column
+     * @param mixed    $value
+     * @param string[] $columns
      *
      * @return Eloquent
      */
     public function findBy($column, $value, array $columns = ['*'])
     {
-        return $this->where([$column => $value])->first($columns);
+        return $this->where([$column => $value], '=', null, 'and', $columns)->first();
     }
 
     /**
      * Find a model by its specified columns and values.
      *
-     * @param array $wheres
-     * @param array $columns
+     * @param array    $wheres
+     * @param string[] $columns
      *
      * @return Eloquent
      */
     public function findWhere(array $wheres, array $columns = ['*'])
     {
-        return $this->where($wheres)->first($columns);
+        return $this->where($wheres, '=', null, 'and', $columns)->first();
     }
 }

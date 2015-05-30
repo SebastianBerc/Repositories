@@ -118,6 +118,9 @@ class CacheRepositoryTest extends TestCase
         $cacheKey = 'users.' . md5(serialize($wheres));
 
         $this->assertTrue($this->cache->has($cacheKey));
+
+        // In cache we will hold collection with one object (or more),
+        // and repository is responsible to fetch first one.
         $this->assertEquals($finded, $this->cache->get($cacheKey)->first());
     }
 
@@ -133,6 +136,9 @@ class CacheRepositoryTest extends TestCase
         $cacheKey = 'users.' . md5(serialize($wheres));
 
         $this->assertTrue($this->cache->has($cacheKey));
+
+        // In cache we will hold collection with one object (or more),
+        // and repository is responsible to fetch first one.
         $this->assertEquals($finded, $this->cache->get($cacheKey)->first());
     }
 
@@ -140,15 +146,15 @@ class CacheRepositoryTest extends TestCase
     public function itShouldFindRecordsWhereGivenFieldsAreMatch()
     {
         $this->factory()->times(17)->create(ModelStub::class);
-        $this->repository->where('password', '=', 'secret', 'and')->get();
+        $this->repository->where('password', '=', 'secret', 'and');
 
         /** @var Collection $finded */
-        $finded   = $this->repository->where('password', '=', 'secret', 'and')->get();
+        $finded   = $this->repository->where('password', '=', 'secret', 'and');
         $wheres   = array_combine(['column', 'operator', 'value', 'boolean'], ['password', '=', 'secret', 'and']);
         $cacheKey = 'users.' . md5(serialize($wheres));
 
         $this->assertTrue($this->cache->has($cacheKey));
-        $this->assertEquals($finded, $this->cache->get($cacheKey)->get());
+        $this->assertEquals($finded, $this->cache->get($cacheKey));
     }
 
     /** @test */
