@@ -97,6 +97,22 @@ class CacheRepositoryManager implements Repositorable
     }
 
     /**
+     * Retrieve data from cache if exists.
+     *
+     * @param string $cacheKey
+     *
+     * @return mixed
+     */
+    public function retrieve($cacheKey)
+    {
+        if ($this->cache->has($cacheKey)) {
+            return $this->cache->get($cacheKey);
+        }
+
+        return false;
+    }
+
+    /**
      * Return a new instance of RepositoryManager.
      *
      * @return RepositoryManager
@@ -117,11 +133,7 @@ class CacheRepositoryManager implements Repositorable
     {
         $cacheKey = ($columns == ['*'] ? $this->cacheKey() : $this->cacheKey($columns));
 
-        if ($this->cache->has($cacheKey)) {
-            return $this->cache->get($cacheKey);
-        }
-
-        return $this->store($cacheKey, $this->lifetime, func_get_args());
+        return $this->retrieve($cacheKey) ?: $this->store($cacheKey, $this->lifetime, func_get_args());
     }
 
     /**
@@ -138,11 +150,7 @@ class CacheRepositoryManager implements Repositorable
     {
         $cacheKey = $this->cacheKey(compact('column', 'operator', 'value', 'boolean', 'columns'));
 
-        if ($this->cache->has($cacheKey)) {
-            return $this->cache->get($cacheKey);
-        }
-
-        return $this->store($cacheKey, $this->lifetime, func_get_args());
+        return $this->retrieve($cacheKey) ?: $this->store($cacheKey, $this->lifetime, func_get_args());
     }
 
     /**
@@ -157,11 +165,7 @@ class CacheRepositoryManager implements Repositorable
     {
         $cacheKey = $this->cacheKey("paginate.{$perPage}");
 
-        if ($this->cache->has($cacheKey)) {
-            return $this->cache->get($cacheKey);
-        }
-
-        return $this->store($cacheKey, $this->lifetime, func_get_args());
+        return $this->retrieve($cacheKey) ?: $this->store($cacheKey, $this->lifetime, func_get_args());
     }
 
     /**
@@ -241,11 +245,7 @@ class CacheRepositoryManager implements Repositorable
     {
         $cacheKey = $this->cacheKey($identifier);
 
-        if ($this->cache->has($cacheKey)) {
-            return $this->cache->get($cacheKey);
-        }
-
-        return $this->store($cacheKey, $this->lifetime, func_get_args());
+        return $this->retrieve($cacheKey) ?: $this->store($cacheKey, $this->lifetime, func_get_args());
     }
 
     /**
