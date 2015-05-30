@@ -55,6 +55,8 @@ abstract class Repository
 
     /**
      * Create a new Repository instance.
+     *
+     * @param Application $app
      */
     public function __construct(Application $app)
     {
@@ -85,6 +87,7 @@ abstract class Repository
      * Return instance of Eloquent model.
      *
      * @return static
+     * @throws InvalidRepositoryModel
      */
     protected function makeModel()
     {
