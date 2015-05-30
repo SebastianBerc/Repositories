@@ -1,5 +1,6 @@
 <?php namespace SebastianBerc\Repositories;
 
+use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -59,6 +60,18 @@ abstract class Repository
     {
         $this->app = $app;
         $this->makeModel();
+    }
+
+    /**
+     * Create a new Repository instance.
+     *
+     * @return static
+     */
+    public static function instance()
+    {
+        $app = (function_exists('app') ? app() : Container::getInstance());
+
+        return new static($app);
     }
 
     /**
