@@ -1,18 +1,25 @@
 <?php namespace SebastianBerc\Repositories\Contracts;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
- * Interface Repositorable
+ * Interface RepositoryInterface
  *
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
  * @package   SebastianBerc\Repositories\Contracts
  */
-interface Repositorable
+interface RepositoryInterface
 {
+    /**
+     * Return fully qualified model class name.
+     *
+     * @return string
+     */
+    public function takeModel();
+
     /**
      * Get all of the models from the database.
      *
@@ -30,7 +37,7 @@ interface Repositorable
      * @param mixed  $value
      * @param string $boolean
      *
-     * @return Builder
+     * @return mixed
      */
     public function where($column, $operator = '=', $value = null, $boolean = 'and');
 
@@ -40,7 +47,7 @@ interface Repositorable
      * @param int   $perPage
      * @param array $columns
      *
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return LengthAwarePaginator
      */
     public function paginate($perPage = 15, array $columns = ['*']);
 
@@ -102,4 +109,37 @@ interface Repositorable
      * @return Eloquent
      */
     public function findWhere(array $wheres, array $columns = ['*']);
+
+    /**
+     * Returns total count of whole collection.
+     *
+     * @return int
+     */
+    public function count();
+
+    /**
+     * Fetch collection ordered and filtrated by specified columns for specified page contained in paginator.
+     *
+     * @param int   $page
+     * @param int   $perPage
+     * @param array $filter
+     * @param array $sort
+     * @param array $columns
+     *
+     * @return LengthAwarePaginator
+     */
+    public function fetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = []);
+
+    /**
+     * Fetch collection ordered and filtrated by specified columns for specified page.
+     *
+     * @param int   $page
+     * @param int   $perPage
+     * @param array $filter
+     * @param array $sort
+     * @param array $columns
+     *
+     * @return Collection
+     */
+    public function simpleFetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = []);
 }

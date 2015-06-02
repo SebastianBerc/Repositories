@@ -141,10 +141,24 @@ class RepositoryTest extends TestCase
         $this->factory()->times(17)->create(ModelStub::class);
 
         /** @var Collection $finded */
-        $finded = $this->repository->where(['password' => 'secret']);
+        $finded = $this->repository->where(['password' => 'secret'])->get();
 
         $this->assertInstanceOf(Collection::class, $finded);
         $this->assertEquals(17, $finded->count());
+    }
+
+    /** @test */
+    public function itShouldReturnTotalCountOfRecordsInDatabase()
+    {
+        $this->factory()->times(21)->create(ModelStub::class);
+
+        $this->assertEquals(21, $this->repository->count());
+    }
+
+    /** @test */
+    public function itShouldCallMethodOnModel()
+    {
+        $this->assertEquals('users', $this->repository->getTable());
     }
 
     /** @test */
