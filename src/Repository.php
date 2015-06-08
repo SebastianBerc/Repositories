@@ -183,11 +183,7 @@ abstract class Repository implements RepositoryInterface
         /** @var LengthAwarePaginator $paginator */
         $paginator = $this->mediator(func_get_args());
 
-        if ($this->transformer) {
-            $paginator = $this->mediator->transformPaginator($paginator);
-        }
-
-        return $paginator;
+        return $this->transformer ? $this->mediator->transformPaginator($paginator) : $paginator;
     }
 
     /**
@@ -303,11 +299,7 @@ abstract class Repository implements RepositoryInterface
         /** @var LengthAwarePaginator $paginator */
         $paginator = $this->mediator(func_get_args());
 
-        if ($this->transformer) {
-            $paginator = $this->mediator->transformPaginator($paginator);
-        }
-
-        return $paginator;
+        return $this->transformer ? $this->mediator->transformPaginator($paginator) : $paginator;
     }
 
     /**
