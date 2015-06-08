@@ -3,9 +3,8 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use SebastianBerc\Repositories\Contracts\MayHaveGrid;
-use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
 use SebastianBerc\Repositories\Repository;
+use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
 
 /**
  * Class GridRepositoryTest

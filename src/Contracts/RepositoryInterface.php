@@ -21,31 +21,40 @@ interface RepositoryInterface
     public function takeModel();
 
     /**
+     * Return instance of Eloquent model.
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function makeModel();
+
+    /**
+     * Return instance of query builder for Eloquent model.
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function makeQuery();
+
+    /**
      * Get all of the models from the database.
      *
-     * @param array $columns
+     * @param string[] $columns
      *
      * @return Collection
      */
     public function all(array $columns = ['*']);
 
     /**
-     * Create a new basic where query clause on model.
+     * Returns total count of whole collection.
      *
-     * @param string $column
-     * @param string $operator
-     * @param mixed  $value
-     * @param string $boolean
-     *
-     * @return mixed
+     * @return int
      */
-    public function where($column, $operator = '=', $value = null, $boolean = 'and');
+    public function count();
 
     /**
      * Paginate the given query.
      *
-     * @param int   $perPage
-     * @param array $columns
+     * @param int      $perPage
+     * @param string[] $columns
      *
      * @return LengthAwarePaginator
      */
@@ -82,19 +91,31 @@ interface RepositoryInterface
     /**
      * Find a model by its primary key.
      *
-     * @param int   $identifier
-     * @param array $columns
+     * @param int      $identifier
+     * @param string[] $columns
      *
      * @return Eloquent
      */
     public function find($identifier, array $columns = ['*']);
 
     /**
+     * Create a new basic where query clause on model.
+     *
+     * @param string $column
+     * @param string $operator
+     * @param mixed  $value
+     * @param string $boolean
+     *
+     * @return mixed
+     */
+    public function where($column, $operator = '=', $value = null, $boolean = 'and');
+
+    /**
      * Find a model by its specified column and value.
      *
-     * @param mixed $column
-     * @param mixed $value
-     * @param array $columns
+     * @param mixed    $column
+     * @param mixed    $value
+     * @param string[] $columns
      *
      * @return Eloquent
      */
@@ -103,28 +124,21 @@ interface RepositoryInterface
     /**
      * Find a model by its specified columns and values.
      *
-     * @param array $wheres
-     * @param array $columns
+     * @param array    $wheres
+     * @param string[] $columns
      *
      * @return Eloquent
      */
     public function findWhere(array $wheres, array $columns = ['*']);
 
     /**
-     * Returns total count of whole collection.
-     *
-     * @return int
-     */
-    public function count();
-
-    /**
      * Fetch collection ordered and filtrated by specified columns for specified page contained in paginator.
      *
-     * @param int   $page
-     * @param int   $perPage
-     * @param array $filter
-     * @param array $sort
-     * @param array $columns
+     * @param int      $page
+     * @param int      $perPage
+     * @param array    $filter
+     * @param array    $sort
+     * @param string[] $columns
      *
      * @return LengthAwarePaginator
      */
@@ -133,11 +147,11 @@ interface RepositoryInterface
     /**
      * Fetch collection ordered and filtrated by specified columns for specified page.
      *
-     * @param int   $page
-     * @param int   $perPage
-     * @param array $filter
-     * @param array $sort
-     * @param array $columns
+     * @param int      $page
+     * @param int      $perPage
+     * @param array    $filter
+     * @param array    $sort
+     * @param string[] $columns
      *
      * @return Collection
      */

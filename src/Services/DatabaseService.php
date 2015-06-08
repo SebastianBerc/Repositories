@@ -1,115 +1,48 @@
-<?php namespace SebastianBerc\Repositories;
+<?php namespace SebastianBerc\Repositories\Services;
 
-use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use SebastianBerc\Repositories\Contracts\RepositoryInterface;
-use SebastianBerc\Repositories\Contracts\ShouldBeCached;
-use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
-use SebastianBerc\Repositories\Mediators\RepositoryMediator;
 use SebastianBerc\Repositories\Traits\Filterable;
 use SebastianBerc\Repositories\Traits\Sortable;
 
 /**
- * Class Repositories
+ * Class DatabaseService
  *
- * @author    Sebastian Berć <sebastian.berc@gmail.com>
- * @copyright Copyright (c) Sebastian Berć
- * @package   SebastianBerc\Repositories
+ * @author  Sebastian Berć <sebastian.berc@gmail.com>
+ *
+ * @package SebastianBerc\Repositories\Services
  */
-abstract class Repository implements RepositoryInterface
+class DatabaseService
 {
     use Filterable, Sortable;
 
     /**
-     * Contains Laravel Application instance.
-     *
      * @var Application
      */
     protected $app;
 
     /**
-     * Contains Eloquent model instance.
-     *
-     * @var Eloquent
+     * @var RepositoryInterface
      */
-    public $model;
+    protected $repository;
 
     /**
-     * Contains time of caching.
+     * Contains model instance for fetch, and simple fetch methods.
+     *
+     * @var mixed
      */
-    public $lifetime;
+    protected $instance;
 
     /**
-     * Create a new RepositoryInterface instance.
-     *
-     * @param Application $app
+     * @param RepositoryInterface $repository
      */
-    public function __construct(Application $app)
+    public function __construct(Application $app, RepositoryInterface $repository)
     {
-        $this->app      = $app;
-        $this->mediator = new RepositoryMediator($app, $this);
-    }
-
-    /**
-     * Create a new RepositoryInterface instance.
-     *
-     * @return static
-     */
-    public static function instance()
-    {
-        $app = (function_exists('app') ? app() : Container::getInstance());
-
-        return new static($app);
-    }
-
-    /**
-     * @param array $parameters
-     *
-     * @return mixed
-     */
-    public function mediator(array $parameters)
-    {
-        $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]["function"];
-
-        if ($this->shouldBeCached()) {
-            return $this->mediator->cache($caller, $parameters);
-        }
-
-        return $this->mediator->database($caller, $parameters);
-    }
-
-    /**
-     * Return fully qualified model class name.
-     *
-     * @return string
-     */
-    abstract public function takeModel();
-
-    /**
-     * Return instance of Eloquent model.
-     *
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    public function makeModel()
-    {
-        if (!($this->model = $this->app->make($this->takeModel())) instanceof Eloquent) {
-            throw new InvalidRepositoryModel(get_class($this->model), Eloquent::class);
-        }
-
-        return $this->model;
-    }
-
-    /**
-     * Return instance of query builder for Eloquent model.
-     *
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public function makeQuery()
-    {
-        return $this->makeModel()->query()->getQuery();
+        $this->repository = $repository;
+        $this->app        = $app;
     }
 
     /**
@@ -121,7 +54,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function all(array $columns = ['*'])
     {
-        return $this->mediator(func_get_args());
+        return $this->repository->makeModel()->all($columns);
     }
 
     /**
@@ -137,7 +70,9 @@ abstract class Repository implements RepositoryInterface
      */
     public function where($column, $operator = '=', $value = null, $boolean = 'and', array $columns = ['*'])
     {
-        return $this->mediator(func_get_args());
+        return $this->repository->makeModel()->query()
+            ->where($column, $operator, $value, $boolean, $columns)
+            ->get($columns);
     }
 
     /**
@@ -150,7 +85,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function paginate($perPage = 15, array $columns = ['*'])
     {
-        return $this->mediator(func_get_args());
+        return $this->repository->makeModel()->query()->paginate($perPage, $columns);
     }
 
     /**
@@ -162,7 +97,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function create(array $attributes = [])
     {
-        return $this->mediator(func_get_args());
+        return $this->repository->makeModel()->create($attributes);
     }
 
     /**
@@ -175,7 +110,15 @@ abstract class Repository implements RepositoryInterface
      */
     public function update($identifier, array $attributes = [])
     {
-        return $this->mediator(func_get_args());
+        $instance = ($identifier instanceof Eloquent ? $identifier : $this->find($identifier));
+
+        $instance->fill($attributes);
+
+        if ($instance->isDirty()) {
+            $instance->save();
+        }
+
+        return $instance;
     }
 
     /**
@@ -187,7 +130,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function delete($identifier)
     {
-        return $this->mediator(func_get_args());
+        return $this->find($identifier, [$this->repository->makeModel()->getKeyName()])->delete();
     }
 
     /**
@@ -200,7 +143,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function find($identifier, array $columns = ['*'])
     {
-        return $this->mediator(func_get_args());
+        return $this->repository->makeModel()->find($identifier, $columns);
     }
 
     /**
@@ -214,7 +157,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function findBy($column, $value, array $columns = ['*'])
     {
-        return $this->mediator(func_get_args());
+        return $this->where([$column => $value], '=', null, 'and', $columns)->first();
     }
 
     /**
@@ -227,7 +170,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function findWhere(array $wheres, array $columns = ['*'])
     {
-        return $this->mediator(func_get_args());
+        return $this->where($wheres, '=', null, 'and', $columns)->first();
     }
 
     /**
@@ -237,7 +180,9 @@ abstract class Repository implements RepositoryInterface
      */
     public function count()
     {
-        return $this->mediator(func_get_args());
+        $countBy = "{$this->repository->makeModel()->getTable()}.{$this->repository->makeModel()->getKeyName()}";
+
+        return $this->repository->makeQuery()->count($countBy);
     }
 
     /**
@@ -253,7 +198,19 @@ abstract class Repository implements RepositoryInterface
      */
     public function fetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
     {
-        return $this->mediator(func_get_args());
+        $this->instance = $this->repository->makeModel();
+
+        $this->multiFilterBy($filter)->multiSortBy($sort);
+
+        $count = $this->instance->count();
+        $items = $this->instance->forPage($page, $perPage)->get($columns);
+
+        $options = [
+            'path'  => $this->app->make('request')->url(),
+            'query' => compact('page', 'perPage')
+        ];
+
+        return (new LengthAwarePaginator($items, $count, $perPage, $page, $options));
     }
 
     /**
@@ -267,38 +224,10 @@ abstract class Repository implements RepositoryInterface
      */
     public function simpleFetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
     {
-        return $this->mediator(func_get_args());
-    }
+        $this->instance = $this->repository->makeModel();
 
-    /**
-     *
-     *
-     * @return bool
-     */
-    protected function shouldBeCached()
-    {
-        if ($this instanceof ShouldBeCached) {
-            return true;
-        }
+        $this->multiFilterBy($filter)->multiSortBy($sort);
 
-        return (new \ReflectionClass($this))->implementsInterface(ShouldBeCached::class);
-    }
-
-    /**
-     * Dynamicaly calls method on model instance.
-     *
-     * @param string $method
-     * @param array  $parameters
-     *
-     * @return mixed
-     * @throws InvalidRepositoryModel
-     */
-    public function __call($method, $parameters)
-    {
-        if (method_exists($model = $this->makeModel(), $method)) {
-            return call_user_func_array([$model, $method], $parameters);
-        }
-
-        throw new \BadMethodCallException();
+        return $this->instance->forPage($page, $perPage)->get($columns);
     }
 }

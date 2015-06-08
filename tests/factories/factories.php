@@ -6,12 +6,12 @@
 
 $factory(
     \SebastianBerc\Repositories\Test\ModelStub::class,
-    ['email' => $faker->companyEmail, 'password' => 'secret']
+    ['email' => $faker->companyEmail, 'password' => 'secret', 'remember_token' => md5(str_random())]
 );
 
 $factory(
     \SebastianBerc\Repositories\Test\CacheModelStub::class,
-    ['email' => $faker->companyEmail, 'password' => 'secret']
+    ['email' => $faker->companyEmail, 'password' => 'secret', 'remember_token' => md5(str_random())]
 );
 
 $factory(

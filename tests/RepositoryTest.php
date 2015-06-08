@@ -141,7 +141,7 @@ class RepositoryTest extends TestCase
         $this->factory()->times(17)->create(ModelStub::class);
 
         /** @var Collection $finded */
-        $finded = $this->repository->where(['password' => 'secret'])->get();
+        $finded = $this->repository->where(['password' => 'secret']);
 
         $this->assertInstanceOf(Collection::class, $finded);
         $this->assertEquals(17, $finded->count());
