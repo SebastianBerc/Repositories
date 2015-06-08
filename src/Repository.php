@@ -58,7 +58,7 @@ abstract class Repository implements RepositoryInterface
      *
      * @var RepositoryMediator
      */
-    protected $mediator;
+    public $mediator;
 
     /**
      * Create a new RepositoryInterface instance.
