@@ -19,6 +19,13 @@ use SebastianBerc\Repositories\Services\TransformService;
 class RepositoryMediator
 {
     /**
+     * Contains Laravel Application instance.
+     *
+     * @var Application
+     */
+    protected $app;
+
+    /**
      * Contains a repository instance.
      *
      * @var Repository
