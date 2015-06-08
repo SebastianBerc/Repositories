@@ -2,9 +2,9 @@
 
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\Container as Application;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Pagination\LengthAwarePaginator;
 use SebastianBerc\Repositories\Contracts\RepositoryInterface;
 use SebastianBerc\Repositories\Contracts\ShouldBeCached;
 use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
@@ -66,6 +66,8 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
+     * Call an action on mediator.
+     *
      * @param array $parameters
      *
      * @return mixed

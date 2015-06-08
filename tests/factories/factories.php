@@ -2,6 +2,8 @@
 /**
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
+ *
+ * @var Closure $factory
  */
 
 $factory(
