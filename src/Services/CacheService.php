@@ -1,97 +1,66 @@
 <?php namespace SebastianBerc\Repositories\Services;
 
+use Illuminate\Contracts\Container\Container as Application;
+use SebastianBerc\Repositories\Contracts\ServiceInterface;
 use SebastianBerc\Repositories\Repository;
 
 /**
  * Class CacheService
  *
- * @author  Sebastian Berć <sebastian.berc@gmail.com>
- *
- * @package SebastianBerc\Repositories\Services
+ * @author    Sebastian Berć <sebastian.berc@gmail.com>
+ * @copyright Copyright (c) Sebastian Berć
+ * @package   SebastianBerc\Repositories\Services
  */
-class CacheService
+class CacheService implements ServiceInterface
 {
     /**
+     * Contains instance of repository.
+     *
      * @var Repository
      */
     protected $repository;
 
     /**
+     * Contains cache repository.
+     *
      * @var \Illuminate\Contracts\Cache\Repository
      */
     protected $cache;
 
     /**
+     * Contains tag for repository model.
+     *
      * @var string
      */
     protected $tag;
 
     /**
+     * Contains cache life time.
+     *
      * @var int
      */
     protected $lifetime;
 
     /**
+     * Contains cache key for given action.
+     *
      * @var string
      */
     protected $cacheKey;
 
     /**
-     * @param Repository $repository
-     * @param int        $lifetime
+     * Create a new cache service.
+     *
+     * @param Application $app
+     * @param Repository  $repository
+     * @param int         $lifetime
      */
-    public function __construct(Repository $repository, $lifetime = 30)
+    public function __construct(Application $app, Repository $repository, array $options = [])
     {
         $this->repository = $repository;
-        $this->lifetime   = $lifetime;
+        $this->lifetime   = data_get($options, 'lifetime');
         $this->tag        = $repository->makeModel()->getTable();
-        $this->cache      = app('cache.store');
-    }
-
-    /**
-     * @return \Illuminate\Contracts\Cache\Repository
-     */
-    protected function cache()
-    {
-        return $this->cache->tags($this->tag);
-    }
-
-    /**
-     * @param string $caller
-     * @param array  $parameters
-     *
-     * @return string
-     */
-    public function cacheKey($caller, array $parameters = [])
-    {
-        $parameters = compact('caller', 'parameters');
-
-        return md5(serialize($parameters));
-    }
-
-    /**
-     * @param string $cacheKey
-     *
-     * @return bool
-     */
-    public function has($cacheKey)
-    {
-        return $this->cache()->has($cacheKey);
-    }
-
-    /**
-     * @param string $caller
-     * @param array  $parameters
-     *
-     * @return mixed
-     */
-    public function store($caller, array $parameters = [])
-    {
-        $cacheKey = $this->cacheKey($caller, $parameters);
-
-        return $this->cache()->remember($cacheKey, $this->lifetime, function () use ($caller, $parameters) {
-            return call_user_func_array([$this->repository->mediator, 'database'], [$caller, $parameters]);
-        });
+        $this->cache      = $app->make('cache.store');
     }
 
     /**
@@ -112,19 +81,62 @@ class CacheService
     }
 
     /**
-     * Return data for given cache key.
+     * Generate and return cache key for caller with specified parameters.
      *
-     * @param string $cacheKey
+     * @param string $caller
+     * @param array  $parameters
+     *
+     * @return string
+     */
+    public function cacheKey($caller, array $parameters = [])
+    {
+        $parameters = compact('caller', 'parameters');
+
+        return md5(serialize($parameters));
+    }
+
+    /**
+     * Initialize cache repository with specified tag for given model.
+     *
+     * @return \Illuminate\Contracts\Cache\Repository
+     */
+    protected function cache()
+    {
+        return $this->cache->tags($this->tag);
+    }
+
+    /**
+     * Store data in cache behind caller with specified parameters.
+     *
+     * @param string $caller
+     * @param array  $parameters
+     *
+     * @return mixed
+     */
+    public function store($caller, array $parameters = [])
+    {
+        $cacheKey = $this->cacheKey($caller, $parameters);
+
+        return $this->cache()->remember($cacheKey, $this->lifetime, function () use ($caller, $parameters) {
+            return call_user_func_array([$this->repository->mediator, 'database'], [$caller, $parameters]);
+        });
+    }
+
+    /**
+     * Forget data in cache behind caller with specified parameters.
+     *
+     * @param string $caller
+     * @param array  $parameters
      *
      * @return bool
      */
-    public function retrieve($cacheKey)
+    public function forget($caller, array $parameters = [])
     {
-        if ($this->has($cacheKey)) {
-            return $this->cache()->get($cacheKey);
-        }
+        $cacheKey = $this->cacheKey($caller, $parameters);
 
-        return false;
+        $this->cache()->forget($cacheKey);
+
+        return $this->repository->mediator->database($caller, $parameters);
     }
 
     /**
@@ -143,21 +155,36 @@ class CacheService
     }
 
     /**
-     * @param string $caller
-     * @param array  $parameters
+     * Return data for given cache key.
+     *
+     * @param string $cacheKey
      *
      * @return bool
      */
-    public function forget($caller, array $parameters = [])
+    public function retrieve($cacheKey)
     {
-        $cacheKey = $this->cacheKey($caller, $parameters);
+        if ($this->has($cacheKey)) {
+            return $this->cache()->get($cacheKey);
+        }
 
-        $this->cache()->forget($cacheKey);
-
-        return $this->repository->mediator->database($caller, $parameters);
+        return false;
     }
 
     /**
+     * Check if specified cache key exists and has data.
+     *
+     * @param string $cacheKey
+     *
+     * @return bool
+     */
+    public function has($cacheKey)
+    {
+        return $this->cache()->has($cacheKey);
+    }
+
+    /**
+     * Execute refresh on cache service and update action on database service.
+     *
      * @param int   $identifier
      * @param array $attributes
      *
@@ -169,6 +196,8 @@ class CacheService
     }
 
     /**
+     * Execute forget on cache service and delete action on database services.
+     *
      * @param int $identifier
      *
      * @return bool
@@ -179,8 +208,12 @@ class CacheService
     }
 
     /**
+     * Dynamicly call method on cache service.
+     *
      * @param string $caller
      * @param array  $parameters
+     *
+     * @return mixed
      */
     public function __call($caller, array $parameters = [])
     {

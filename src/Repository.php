@@ -66,6 +66,8 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
+     * Call an action on mediator.
+     *
      * @param array $parameters
      *
      * @return mixed

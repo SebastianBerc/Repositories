@@ -8,9 +8,9 @@ use SebastianBerc\Repositories\Services\DatabaseService;
 /**
  * Class RepositoryMediator
  *
- * @author  Sebastian Berć <sebastian.berc@gmail.com>
- *
- * @package SebastianBerc\Repositories\Mediators
+ * @author    Sebastian Berć <sebastian.berc@gmail.com>
+ * @copyright Copyright (c) Sebastian Berć
+ * @package   SebastianBerc\Repositories\Mediators
  */
 class RepositoryMediator
 {
@@ -38,7 +38,7 @@ class RepositoryMediator
     {
         $this->app        = $app;
         $this->repository = $repository;
-        $this->cache      = new CacheService($repository, $repository->lifetime ?: 30);
+        $this->cache      = new CacheService($app, $repository, ['lifetime' => $repository->lifetime ?: 30]);
         $this->database   = new DatabaseService($app, $repository);
     }
 
