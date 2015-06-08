@@ -9,6 +9,7 @@ use SebastianBerc\Repositories\Contracts\RepositoryInterface;
 use SebastianBerc\Repositories\Contracts\ShouldBeCached;
 use SebastianBerc\Repositories\Contracts\TransformerInterface;
 use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
+use SebastianBerc\Repositories\Exceptions\InvalidTransformer;
 use SebastianBerc\Repositories\Mediators\RepositoryMediator;
 use SebastianBerc\Repositories\Traits\Filterable;
 use SebastianBerc\Repositories\Traits\Sortable;
@@ -133,6 +134,10 @@ abstract class Repository implements RepositoryInterface
      */
     public function setTransformer($transformer)
     {
+        if (!(new \ReflectionClass($transformer))->implementsInterface(TransformerInterface::class)) {
+            throw new InvalidTransformer();
+        }
+
         $this->transformer = $transformer;
 
         return $this;

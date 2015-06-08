@@ -4,6 +4,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
+use SebastianBerc\Repositories\Exceptions\InvalidTransformer;
 use SebastianBerc\Repositories\Repository;
 use SebastianBerc\Repositories\Transformer;
 
@@ -200,6 +201,24 @@ class TransformRepositoryResultTest extends TestCase
     }
 
     /** @test */
+    public function itShouldThrowAnExceptionWhenBadTransformerIsDeclared()
+    {
+        $this->factory()->create(ModelTransformStub::class);
+        $repository = new RepositoryWithBadTransformStub($this->app);
+
+        $this->setExpectedException(InvalidTransformer::class);
+        $repository->find(1);
+    }
+
+    /** @test */
+    public function itShouldThrowAnExceptionWhenBadTransformerIsGiven()
+    {
+        $this->setExpectedException(InvalidTransformer::class);
+
+        $this->repository->setTransformer(ModelTransformStub::class);
+    }
+
+    /** @test */
     public function itShouldThrowExceptionWhenCallingBadMethod()
     {
         $this->setExpectedException(\BadMethodCallException::class);
@@ -249,6 +268,16 @@ class BadRepositoryTransformStub extends Repository
     public function takeModel()
     {
         return BadModelTransformStub::class;
+    }
+}
+
+class RepositoryWithBadTransformStub extends Repository
+{
+    public $transformer = ModelTransformStub::class;
+
+    public function takeModel()
+    {
+        return ModelTransformStub::class;
     }
 }
 

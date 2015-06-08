@@ -3,6 +3,7 @@
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Support\Collection;
 use SebastianBerc\Repositories\Contracts\TransformerInterface;
+use SebastianBerc\Repositories\Exceptions\InvalidTransformer;
 use SebastianBerc\Repositories\Repository;
 
 /**
@@ -34,6 +35,10 @@ class TransformService
     public function executeOn(Collection $collection)
     {
         $transformer = $this->repository->transformer;
+
+        if (!(new \ReflectionClass($transformer))->implementsInterface(TransformerInterface::class)) {
+            throw new InvalidTransformer();
+        }
 
         /** @var TransformerInterface $transformer */
         $transformer = new $transformer($collection);
