@@ -47,11 +47,18 @@ abstract class Repository implements RepositoryInterface
     public $lifetime;
 
     /**
-     * Contains Transformer class instance.
+     * Contains transformer instance.
      *
      * @var string
      */
     public $transformer;
+
+    /**
+     * Contains repository mediator instance.
+     *
+     * @var RepositoryMediator
+     */
+    protected $mediator;
 
     /**
      * Create a new RepositoryInterface instance.
@@ -185,7 +192,6 @@ abstract class Repository implements RepositoryInterface
      */
     public function paginate($perPage = 15, array $columns = ['*'])
     {
-        /** @var LengthAwarePaginator $paginator */
         $paginator = $this->mediator(func_get_args());
 
         return $this->transformer ? $this->mediator->transformPaginator($paginator) : $paginator;
@@ -301,7 +307,6 @@ abstract class Repository implements RepositoryInterface
      */
     public function fetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
     {
-        /** @var LengthAwarePaginator $paginator */
         $paginator = $this->mediator(func_get_args());
 
         return $this->transformer ? $this->mediator->transformPaginator($paginator) : $paginator;
