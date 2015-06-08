@@ -1,13 +1,13 @@
 <?php namespace SebastianBerc\Repositories\Contracts;
 
 /**
- * Interface MayHaveGrid
+ * Interface ServiceInterface
  *
  * @author  Sebastian Berć <sebastian.berc@gmail.com>
  *
  * @package SebastianBerc\Repositories\Contracts
  */
-interface MayHaveGrid
+interface ServiceInterface
 {
-
+    public function __construct(RepositoryInterface $repository);
 }

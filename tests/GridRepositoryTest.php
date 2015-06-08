@@ -2,9 +2,9 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
-use SebastianBerc\Repositories\Contracts\MayHaveGrid;
-use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
+use Illuminate\Support\Collection;
 use SebastianBerc\Repositories\Repository;
+use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
 
 /**
  * Class GridRepositoryTest
@@ -52,7 +52,7 @@ class GridRepositoryTest extends TestCase
     {
         $this->factory()->times(20)->create(User::class);
 
-        $paginator = $this->repository->fetch(1, 5, [], ['id' => 'desc']);
+        $paginator = $this->repository->fetch(1, 5, ['*'], [], ['id' => 'desc']);
 
         $this->assertInstanceOf(LengthAwarePaginator::class, $paginator);
         $this->assertEquals(5, sizeof($paginator->items()));
@@ -66,13 +66,13 @@ class GridRepositoryTest extends TestCase
         $this->factory()->times(4)->create(PasswordReset::class);
         $this->factory()->times(1)->create(PasswordReset::class, ['token' => '000a0a0ea0813aef2f6c6dfd3a49c546']);
 
-        $paginator = $this->repository->fetch(1, 5, [], ['password.token' => 'ASC']);
+        $paginator = $this->repository->fetch(1, 5, ['*'], [], ['password.token' => 'ASC']);
 
         $this->assertInstanceOf(LengthAwarePaginator::class, $paginator);
         $this->assertEquals(5, sizeof($paginator->items()));
         $this->assertEquals(5, current($paginator->items())->getKey());
 
-        $paginator = $this->repository->fetch(1, 5, [], ['password.token' => 'DESC']);
+        $paginator = $this->repository->fetch(1, 5, ['*'], [], ['password.token' => 'DESC']);
 
         $this->assertEquals(5, sizeof($paginator->items()));
         $this->assertEquals(5, last($paginator->items())->getKey());
@@ -84,7 +84,7 @@ class GridRepositoryTest extends TestCase
         $this->factory()->times(20)->create(User::class);
         $this->factory()->times(5)->create(User::class, ['password' => 'notSecret']);
 
-        $paginator = $this->repository->fetch(1, 5, ['password' => 'not']);
+        $paginator = $this->repository->fetch(1, 5, ['*'], ['password' => 'not']);
 
         $this->assertInstanceOf(LengthAwarePaginator::class, $paginator);
         $this->assertEquals(5, sizeof($paginator->items()));
@@ -97,11 +97,24 @@ class GridRepositoryTest extends TestCase
         $this->factory()->times(20)->create(PasswordReset::class);
         $this->factory()->times(5)->create(PasswordReset::class, ['token' => $token = md5('token')]);
 
-        $paginator = $this->repository->fetch(1, 5, ['password.token' => $token]);
+        $paginator = $this->repository->fetch(1, 5, ['*'], ['password.token' => $token]);
 
         $this->assertInstanceOf(LengthAwarePaginator::class, $paginator);
         $this->assertEquals(5, sizeof($paginator->items()));
         $this->assertEquals(5, $paginator->total());
+    }
+
+    /** @test */
+    public function itShouldReturnSimplePaginatedRecordsInDatabaseAsCollection()
+    {
+        $this->factory()->times(15)->create(User::class);
+
+        $collection = $this->repository->simpleFetch(1, 5);
+
+        $this->assertInstanceOf(Collection::class, $collection);
+        $this->assertEquals(5, $collection->count());
+        $this->assertEquals(1, $collection->first()->getKey());
+        $this->assertEquals(5, $collection->last()->getKey());
     }
 
     /** @test */
@@ -120,7 +133,7 @@ class GridRepositoryTest extends TestCase
     }
 }
 
-class GridRepositoryStub extends Repository implements MayHaveGrid
+class GridRepositoryStub extends Repository
 {
     public function takeModel()
     {

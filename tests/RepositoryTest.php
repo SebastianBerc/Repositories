@@ -148,6 +148,20 @@ class RepositoryTest extends TestCase
     }
 
     /** @test */
+    public function itShouldReturnTotalCountOfRecordsInDatabase()
+    {
+        $this->factory()->times(21)->create(ModelStub::class);
+
+        $this->assertEquals(21, $this->repository->count());
+    }
+
+    /** @test */
+    public function itShouldCallMethodOnModel()
+    {
+        $this->assertEquals('users', $this->repository->getTable());
+    }
+
+    /** @test */
     public function itShouldThrowAnExceptionWhenBadObjectIsGiven()
     {
         $this->setExpectedException(InvalidRepositoryModel::class);

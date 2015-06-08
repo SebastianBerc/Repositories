@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use SebastianBerc\Repositories\Contracts\ShouldBeCached;
 use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
 use SebastianBerc\Repositories\Repository;
@@ -45,128 +46,94 @@ class CacheRepositoryTest extends TestCase
     /** @test */
     public function itShouldReturnAllRecordsFromCache()
     {
-        $this->factory()->times(5)->create(ModelStub::class);
-        $this->repository->all();
+        $this->factory()->times(5)->create(CacheModelStub::class);
+        $collection = $this->repository->all();
 
-        $this->assertTrue($this->cache->has('users'));
-        $this->assertEquals($this->repository->all(), $this->cache->get('users'));
+        $this->assertInstanceOf(Collection::class, $collection);
+        $this->assertEquals($this->repository->all(), $collection);
     }
 
     /** @test */
     public function isShouldPaginateRecordsFromCache()
     {
-        $this->factory()->times(50)->create(ModelStub::class);
-        $this->repository->paginate(10);
+        $this->factory()->times(50)->create(CacheModelStub::class);
+        $paginator = $this->repository->paginate(10);
 
-        $cacheKey = "users.paginate.10";
-
-        $this->assertTrue($this->cache->has($cacheKey));
-        $this->assertEquals($this->repository->paginate(10), $this->cache->get($cacheKey));
+        $this->assertInstanceOf(LengthAwarePaginator::class, $paginator);
+        $this->assertEquals($this->repository->paginate(10), $paginator);
     }
 
     /** @test */
     public function itShouldReturnSpecifiedRecordFromCache()
     {
-        $this->factory()->create(ModelStub::class);
+        $model = $this->factory()->create(CacheModelStub::class);
 
-        $finded = $this->repository->find(1);
-
-        $this->assertTrue($this->cache->has('users.1'));
-        $this->assertEquals($finded, $this->cache->get('users.1'));
+        $this->assertInstanceOf(CacheModelStub::class, $model);
+        $this->assertEquals($this->repository->find($model->getKey()), $model);
     }
 
     /** @test */
     public function itShouldCreateNewRecordInCache()
     {
-        $this->repository->create(['email' => $this->fake()->email, 'password' => 'secret']);
+        $model = $this->repository->create([
+            'email' => $this->fake()->email,
+            'password' => 'secret',
+            'remember_token' => md5(str_random())
+        ]);
 
-        $this->assertTrue($this->cache->has('users.1'));
-        $this->assertEquals($this->repository->find(1), $this->cache->get('users.1'));
+        $this->assertEquals($this->repository->find($model->getKey()), $model);
     }
 
     /** @test */
     public function itShouldUpdateSpecifiedRecordInCache()
     {
-        $model = $this->factory()->create(ModelStub::class);
+        $model   = $this->factory()->create(CacheModelStub::class);
+        $updated = $this->repository->update($model->getKey(), ['password' => 'terces']);
 
-        $this->repository->update($model->getKey(), ['password' => 'terces']);
-
-        $this->assertTrue($this->cache->has("users.{$model->getKey()}"));
-        $this->assertEquals($this->repository->find($model->getKey()), $this->cache->get("users.{$model->getKey()}"));
+        $this->assertEquals($this->repository->find($model->getKey()), $updated);
     }
 
     /** @test */
     public function itShouldDeleteSpecifiedRecordFromCache()
     {
-        $model = $this->factory()->create(ModelStub::class);
+        $model = $this->factory()->create(CacheModelStub::class);
 
         $this->repository->delete($model->getKey());
 
-        $this->assertFalse($this->cache->has("users.{$model->getKey()}"));
-        $this->assertNull($this->cache->get("users.{$model->getKey()}"));
+        $this->assertNull($this->repository->find($model->getKey()));
     }
 
     /** @test */
     public function itShouldFindRecordByHisField()
     {
-        $this->factory()->times(15)->create(ModelStub::class);
-        $model = $this->factory()->create(ModelStub::class);
-        $this->repository->findBy('email', $model->email);
+        $this->factory()->times(15)->create(CacheModelStub::class);
+        $model = $this->factory()->create(CacheModelStub::class);
 
-        $finded   = $this->repository->findBy('email', $model->email);
-        $wheres   = [
-            'column'   => ['email' => $model->email],
-            'operator' => '=',
-            'value'    => null,
-            'boolean'  => 'and',
-            'columns'  => ['*']
-        ];
-        $cacheKey = 'users.' . md5(serialize($wheres));
+        $finded = $this->repository->findBy('email', $model->email);
 
-        $this->assertTrue($this->cache->has($cacheKey));
-
-        // In cache we will hold collection with one object (or more),
-        // and repository is responsible to fetch first one.
-        $this->assertEquals($finded, $this->cache->get($cacheKey)->first());
+        $this->assertEquals($this->repository->findBy('email', $model->email), $finded);
     }
 
     /** @test */
     public function itShouldFindRecordWhereGivenFieldsAreMatch()
     {
-        $this->factory()->times(15)->create(ModelStub::class);
-        $model = $this->factory()->create(ModelStub::class);
+        $this->factory()->times(15)->create(CacheModelStub::class);
+        $model = $this->factory()->create(CacheModelStub::class);
         $this->repository->findWhere($wheres = ['email' => $model->email, 'password' => 'secret']);
 
-        $finded   = $this->repository->findWhere($wheres = ['email' => $model->email, 'password' => 'secret']);
-        $wheres   = ['column' => $wheres, 'operator' => '=', 'value' => null, 'boolean' => 'and', 'columns' => ['*']];
-        $cacheKey = 'users.' . md5(serialize($wheres));
+        $finded = $this->repository->findWhere($wheres);
 
-        $this->assertTrue($this->cache->has($cacheKey));
-
-        // In cache we will hold collection with one object (or more),
-        // and repository is responsible to fetch first one.
-        $this->assertEquals($finded, $this->cache->get($cacheKey)->first());
+        $this->assertEquals($finded, $this->repository->findWhere($wheres));
     }
 
     /** @test */
     public function itShouldFindRecordsWhereGivenFieldsAreMatch()
     {
-        $this->factory()->times(17)->create(ModelStub::class);
-        $this->repository->where('password', '=', 'secret', 'and');
+        $this->factory()->times(17)->create(CacheModelStub::class);
 
-        /** @var Collection $finded */
-        $finded   = $this->repository->where('password', '=', 'secret', 'and');
-        $wheres   = [
-            'column'   => 'password',
-            'operator' => '=',
-            'value'    => 'secret',
-            'boolean'  => 'and',
-            'columns'  => ['*']
-        ];
-        $cacheKey = 'users.' . md5(serialize($wheres));
+        $finded = $this->repository->where('password', 'secret');
 
-        $this->assertTrue($this->cache->has($cacheKey));
-        $this->assertEquals($finded, $this->cache->get($cacheKey));
+        $this->assertEquals($this->repository->where('password', 'secret'), $finded);
     }
 
     /** @test */
@@ -196,7 +163,7 @@ class CacheRepositoryStub extends Repository implements ShouldBeCached
 
 class CacheModelStub extends Model
 {
-    protected $fillable = ['email', 'password'];
+    protected $fillable = ['email', 'password', 'remember_token'];
 
     protected $table = 'users';
 }
