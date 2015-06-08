@@ -16,6 +16,20 @@ use SebastianBerc\Repositories\Repository;
 class TransformService
 {
     /**
+     * Contains Laravel Application instance.
+     *
+     * @var Application
+     */
+    protected $app;
+
+    /**
+     * Contains a repository instance.
+     *
+     * @var Repository
+     */
+    protected $repository;
+
+    /**
      * Create a new transform service instance.
      *
      * @param Application $app

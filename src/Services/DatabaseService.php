@@ -20,11 +20,15 @@ class DatabaseService
     use Filterable, Sortable;
 
     /**
+     * Contains Laravel Application instance.
+     *
      * @var Application
      */
     protected $app;
 
     /**
+     * Contains a repository instance.
+     *
      * @var Repository
      */
     protected $repository;
