@@ -62,7 +62,7 @@ class RepositoryMediator
     {
         $this->app        = $app;
         $this->repository = $repository;
-        $this->cache      = new CacheService($app, $repository, ['lifetime' => $repository->lifetime ?: 30]);
+        $this->cache      = new CacheService($app, $repository, $repository->lifetime ?: 30);
         $this->database   = new DatabaseService($app, $repository);
         $this->transform  = new TransformService($app, $repository);
     }
