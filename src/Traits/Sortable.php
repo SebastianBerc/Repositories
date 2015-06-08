@@ -10,16 +10,21 @@
 trait Sortable
 {
     /**
-     * Append column sorting to query builder.
+     * Append many column sorting to query builder.
      *
-     * @param string|array $column
-     * @param string       $direction
+     * @param array $columns
      *
      * @return $this
      */
-    public function sortBy($column, $direction = 'ASC')
+    public function multiSortBy(array $columns)
     {
-        $this->instance = $this->instance->orderBy($column, $direction);
+        foreach ($columns as $column => $direction) {
+            if (strpos($column, '.')) {
+                $this->sortByRelation($column, $direction);
+            } else {
+                $this->sortBy($column, $direction);
+            }
+        }
 
         return $this;
     }
@@ -51,21 +56,16 @@ trait Sortable
     }
 
     /**
-     * Append many column sorting to query builder.
+     * Append column sorting to query builder.
      *
-     * @param array $columns
+     * @param string|array $column
+     * @param string       $direction
      *
      * @return $this
      */
-    public function multiSortBy(array $columns)
+    public function sortBy($column, $direction = 'ASC')
     {
-        foreach ($columns as $column => $direction) {
-            if (strpos($column, '.')) {
-                $this->sortByRelation($column, $direction);
-            } else {
-                $this->sortBy($column, $direction);
-            }
-        }
+        $this->instance = $this->instance->orderBy($column, $direction);
 
         return $this;
     }

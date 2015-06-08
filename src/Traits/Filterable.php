@@ -12,16 +12,21 @@ use Illuminate\Database\Eloquent\Builder;
 trait Filterable
 {
     /**
-     * Append column filter to query builder.
+     * Append many column filters to query builder.
      *
-     * @param string|array $column
-     * @param string       $value
+     * @param array $columns
      *
      * @return $this
      */
-    public function filterBy($column, $value = null)
+    public function multiFilterBy($columns)
     {
-        $this->instance = $this->instance->where($column, 'like', "%$value%");
+        foreach ($columns as $column => $value) {
+            if (strpos($column, '.')) {
+                $this->filterByRelation($column, $value);
+            } else {
+                $this->filterBy($column, $value);
+            }
+        }
 
         return $this;
     }
@@ -51,21 +56,16 @@ trait Filterable
     }
 
     /**
-     * Append many column filters to query builder.
+     * Append column filter to query builder.
      *
-     * @param array $columns
+     * @param string|array $column
+     * @param string       $value
      *
      * @return $this
      */
-    public function multiFilterBy($columns)
+    public function filterBy($column, $value = null)
     {
-        foreach ($columns as $column => $value) {
-            if (strpos($column, '.')) {
-                $this->filterByRelation($column, $value);
-            } else {
-                $this->filterBy($column, $value);
-            }
-        }
+        $this->instance = $this->instance->where($column, 'like', "%$value%");
 
         return $this;
     }

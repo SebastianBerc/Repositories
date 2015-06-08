@@ -63,6 +63,19 @@ class CacheService
     }
 
     /**
+     * Execute refresh on cache service and update action on database service.
+     *
+     * @param int   $identifier
+     * @param array $attributes
+     *
+     * @return mixed
+     */
+    public function update($identifier, array $attributes = [])
+    {
+        return $this->refresh('update', compact('identifier', 'attributes'));
+    }
+
+    /**
      * Forget, and store new data into cache.
      *
      * @param string $caller
@@ -101,7 +114,11 @@ class CacheService
      */
     protected function cache()
     {
-        return $this->cache->tags($this->tag);
+        if (method_exists($this->cache, 'tags')) {
+            return $this->cache->tags($this->tag);
+        }
+
+        return $this->cache;
     }
 
     /**
@@ -122,6 +139,18 @@ class CacheService
     }
 
     /**
+     * Execute forget on cache service and delete action on database services.
+     *
+     * @param int $identifier
+     *
+     * @return bool
+     */
+    public function delete($identifier)
+    {
+        return $this->forget('delete', compact('identifier'));
+    }
+
+    /**
      * Forget data in cache behind caller with specified parameters.
      *
      * @param string $caller
@@ -136,6 +165,19 @@ class CacheService
         $this->cache()->forget($cacheKey);
 
         return $this->repository->mediator->database($caller, $parameters);
+    }
+
+    /**
+     * Dynamicly call method on cache service.
+     *
+     * @param string $caller
+     * @param array  $parameters
+     *
+     * @return mixed
+     */
+    public function __call($caller, array $parameters = [])
+    {
+        return $this->retrieveOrStore($caller, $parameters);
     }
 
     /**
@@ -179,43 +221,5 @@ class CacheService
     public function has($cacheKey)
     {
         return $this->cache()->has($cacheKey);
-    }
-
-    /**
-     * Execute refresh on cache service and update action on database service.
-     *
-     * @param int   $identifier
-     * @param array $attributes
-     *
-     * @return mixed
-     */
-    public function update($identifier, array $attributes = [])
-    {
-        return $this->refresh('update', compact('identifier', 'attributes'));
-    }
-
-    /**
-     * Execute forget on cache service and delete action on database services.
-     *
-     * @param int $identifier
-     *
-     * @return bool
-     */
-    public function delete($identifier)
-    {
-        return $this->forget('delete', compact('identifier'));
-    }
-
-    /**
-     * Dynamicly call method on cache service.
-     *
-     * @param string $caller
-     * @param array  $parameters
-     *
-     * @return mixed
-     */
-    public function __call($caller, array $parameters = [])
-    {
-        return $this->retrieveOrStore($caller, $parameters);
     }
 }

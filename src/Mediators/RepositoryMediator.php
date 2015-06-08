@@ -3,7 +3,6 @@
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use SebastianBerc\Repositories\Contracts\TransformerInterface;
 use SebastianBerc\Repositories\Repository;
 use SebastianBerc\Repositories\Services\CacheService;
 use SebastianBerc\Repositories\Services\DatabaseService;
