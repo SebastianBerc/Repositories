@@ -102,15 +102,23 @@ class RepositoryMediator
      */
     public function transform($collection)
     {
+        // When empty array is passed, we can simple return empty collection.
         if (empty($collection)) {
             return new Collection();
         }
 
         if (!$collection instanceof Collection) {
+            // If given "collection" is an object we need to wrap it into an array, and pass into collection.
             $collection = new Collection(is_array($collection) ? $collection : [$collection]);
         }
 
-        return $this->transform->executeOn($collection);
+        // If transform is declared or set, we can execute transform on his object.
+        if ($this->repository->transformer) {
+            return $this->transform->executeOn($collection);
+        }
+
+        // Otherwise, we can return collection without transformation.
+        return $collection;
     }
 
     /**
@@ -122,6 +130,10 @@ class RepositoryMediator
      */
     public function transformPaginator(LengthAwarePaginator $paginator)
     {
+        if (!$this->repository->transformer) {
+            return $paginator;
+        }
+
         $items = $this->transform($paginator->items())->toArray();
 
         return new LengthAwarePaginator($items, $paginator->total(), $paginator->perPage(), $paginator->currentPage());

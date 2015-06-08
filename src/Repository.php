@@ -159,9 +159,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function all(array $columns = ['*'])
     {
-        $collection = $this->mediator(func_get_args());
-
-        return $this->transformer ? $this->mediator->transform($collection) : $collection;
+        return $this->mediator->transform($this->mediator(func_get_args()));
     }
 
     /**
@@ -177,9 +175,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function where($column, $operator = '=', $value = null, $boolean = 'and', array $columns = ['*'])
     {
-        $collection = $this->mediator(func_get_args());
-
-        return $this->transformer ? $this->mediator->transform($collection) : $collection;
+        return $this->mediator->transform($this->mediator(func_get_args()));
     }
 
     /**
@@ -192,9 +188,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function paginate($perPage = 15, array $columns = ['*'])
     {
-        $paginator = $this->mediator(func_get_args());
-
-        return $this->transformer ? $this->mediator->transformPaginator($paginator) : $paginator;
+        return $this->mediator->transformPaginator($this->mediator(func_get_args()));
     }
 
     /**
@@ -206,9 +200,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function create(array $attributes = [])
     {
-        $model = $this->mediator(func_get_args());
-
-        return $this->transformer ? $this->mediator->transform($model)->first() : $model;
+        return $this->mediator->transform($this->mediator(func_get_args()))->first();
     }
 
     /**
@@ -221,9 +213,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function update($identifier, array $attributes = [])
     {
-        $model = $this->mediator(func_get_args());
-
-        return $this->transformer ? $this->mediator->transform($model)->first() : $model;
+        return $this->mediator->transform($this->mediator(func_get_args()))->first();
     }
 
     /**
@@ -248,9 +238,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function find($identifier, array $columns = ['*'])
     {
-        $model = $this->mediator(func_get_args());
-
-        return $this->transformer ? $this->mediator->transform($model)->first() : $model;
+        return $this->mediator->transform($this->mediator(func_get_args()))->first();
     }
 
     /**
@@ -264,9 +252,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function findBy($column, $value, array $columns = ['*'])
     {
-        $model = $this->mediator(func_get_args());
-
-        return $this->transformer ? $this->mediator->transform($model)->first() : $model;
+        return $this->mediator->transform($this->mediator(func_get_args()))->first();
     }
 
     /**
@@ -279,9 +265,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function findWhere(array $wheres, array $columns = ['*'])
     {
-        $model = $this->mediator(func_get_args());
-
-        return $this->transformer ? $this->mediator->transform($model)->first() : $model;
+        return $this->mediator->transform($this->mediator(func_get_args()))->first();
     }
 
     /**
@@ -307,9 +291,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function fetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
     {
-        $paginator = $this->mediator(func_get_args());
-
-        return $this->transformer ? $this->mediator->transformPaginator($paginator) : $paginator;
+        return $this->mediator->transformPaginator($this->mediator(func_get_args()));
     }
 
     /**
@@ -323,9 +305,7 @@ abstract class Repository implements RepositoryInterface
      */
     public function simpleFetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
     {
-        $collection = $this->mediator(func_get_args());
-
-        return $this->transformer ? $this->mediator->transform($collection) : $collection;
+        return $this->mediator->transform($this->mediator(func_get_args()));
     }
 
     /**
