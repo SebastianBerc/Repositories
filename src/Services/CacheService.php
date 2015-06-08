@@ -82,7 +82,6 @@ class CacheService
     /**
      * @param string $caller
      * @param array  $parameters
-     * @param string $cacheKey
      *
      * @return mixed
      */
