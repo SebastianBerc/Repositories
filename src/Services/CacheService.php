@@ -1,7 +1,6 @@
 <?php namespace SebastianBerc\Repositories\Services;
 
 use Illuminate\Contracts\Container\Container as Application;
-use SebastianBerc\Repositories\Contracts\ServiceInterface;
 use SebastianBerc\Repositories\Repository;
 
 /**
@@ -11,7 +10,7 @@ use SebastianBerc\Repositories\Repository;
  * @copyright Copyright (c) Sebastian Berć
  * @package   SebastianBerc\Repositories\Services
  */
-class CacheService implements ServiceInterface
+class CacheService
 {
     /**
      * Contains instance of repository.
@@ -49,16 +48,16 @@ class CacheService implements ServiceInterface
     protected $cacheKey;
 
     /**
-     * Create a new cache service.
+     * Create a new cache service instance.
      *
      * @param Application $app
      * @param Repository  $repository
      * @param int         $lifetime
      */
-    public function __construct(Application $app, Repository $repository, array $options = [])
+    public function __construct(Application $app, Repository $repository, $lifetime = 30)
     {
         $this->repository = $repository;
-        $this->lifetime   = data_get($options, 'lifetime');
+        $this->lifetime   = $lifetime;
         $this->tag        = $repository->makeModel()->getTable();
         $this->cache      = $app->make('cache.store');
     }

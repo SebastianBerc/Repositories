@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Pagination\LengthAwarePaginator;
 use SebastianBerc\Repositories\Contracts\RepositoryInterface;
 use SebastianBerc\Repositories\Contracts\ShouldBeCached;
+use SebastianBerc\Repositories\Contracts\TransformerInterface;
 use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
 use SebastianBerc\Repositories\Mediators\RepositoryMediator;
 use SebastianBerc\Repositories\Traits\Filterable;
@@ -39,8 +40,17 @@ abstract class Repository implements RepositoryInterface
 
     /**
      * Contains time of caching.
+     *
+     * @var int
      */
     public $lifetime;
+
+    /**
+     * Contains Transformer class instance.
+     *
+     * @var string
+     */
+    public $transformer;
 
     /**
      * Create a new RepositoryInterface instance.
@@ -115,6 +125,20 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
+     * Sets transformer to current repository instance.
+     *
+     * @param string $transformer
+     *
+     * @return static
+     */
+    public function setTransformer($transformer)
+    {
+        $this->transformer = $transformer;
+
+        return $this;
+    }
+
+    /**
      * Get all of the models from the database.
      *
      * @param string[] $columns
@@ -123,7 +147,9 @@ abstract class Repository implements RepositoryInterface
      */
     public function all(array $columns = ['*'])
     {
-        return $this->mediator(func_get_args());
+        $collection = $this->mediator(func_get_args());
+
+        return $this->transformer ? $this->mediator->transform($collection) : $collection;
     }
 
     /**
@@ -139,7 +165,9 @@ abstract class Repository implements RepositoryInterface
      */
     public function where($column, $operator = '=', $value = null, $boolean = 'and', array $columns = ['*'])
     {
-        return $this->mediator(func_get_args());
+        $collection = $this->mediator(func_get_args());
+
+        return $this->transformer ? $this->mediator->transform($collection) : $collection;
     }
 
     /**
@@ -148,11 +176,18 @@ abstract class Repository implements RepositoryInterface
      * @param int      $perPage
      * @param string[] $columns
      *
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return LengthAwarePaginator
      */
     public function paginate($perPage = 15, array $columns = ['*'])
     {
-        return $this->mediator(func_get_args());
+        /** @var LengthAwarePaginator $paginator */
+        $paginator = $this->mediator(func_get_args());
+
+        if ($this->transformer) {
+            $paginator = $this->mediator->transformPaginator($paginator);
+        }
+
+        return $paginator;
     }
 
     /**
@@ -164,7 +199,9 @@ abstract class Repository implements RepositoryInterface
      */
     public function create(array $attributes = [])
     {
-        return $this->mediator(func_get_args());
+        $model = $this->mediator(func_get_args());
+
+        return $this->transformer ? $this->mediator->transform($model)->first() : $model;
     }
 
     /**
@@ -177,7 +214,9 @@ abstract class Repository implements RepositoryInterface
      */
     public function update($identifier, array $attributes = [])
     {
-        return $this->mediator(func_get_args());
+        $model = $this->mediator(func_get_args());
+
+        return $this->transformer ? $this->mediator->transform($model)->first() : $model;
     }
 
     /**
@@ -202,7 +241,9 @@ abstract class Repository implements RepositoryInterface
      */
     public function find($identifier, array $columns = ['*'])
     {
-        return $this->mediator(func_get_args());
+        $model = $this->mediator(func_get_args());
+
+        return $this->transformer ? $this->mediator->transform($model)->first() : $model;
     }
 
     /**
@@ -216,7 +257,9 @@ abstract class Repository implements RepositoryInterface
      */
     public function findBy($column, $value, array $columns = ['*'])
     {
-        return $this->mediator(func_get_args());
+        $model = $this->mediator(func_get_args());
+
+        return $this->transformer ? $this->mediator->transform($model)->first() : $model;
     }
 
     /**
@@ -229,7 +272,9 @@ abstract class Repository implements RepositoryInterface
      */
     public function findWhere(array $wheres, array $columns = ['*'])
     {
-        return $this->mediator(func_get_args());
+        $model = $this->mediator(func_get_args());
+
+        return $this->transformer ? $this->mediator->transform($model)->first() : $model;
     }
 
     /**
@@ -255,7 +300,14 @@ abstract class Repository implements RepositoryInterface
      */
     public function fetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
     {
-        return $this->mediator(func_get_args());
+        /** @var LengthAwarePaginator $paginator */
+        $paginator = $this->mediator(func_get_args());
+
+        if ($this->transformer) {
+            $paginator = $this->mediator->transformPaginator($paginator);
+        }
+
+        return $paginator;
     }
 
     /**
@@ -269,7 +321,9 @@ abstract class Repository implements RepositoryInterface
      */
     public function simpleFetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
     {
-        return $this->mediator(func_get_args());
+        $collection = $this->mediator(func_get_args());
+
+        return $this->transformer ? $this->mediator->transform($collection) : $collection;
     }
 
     /**

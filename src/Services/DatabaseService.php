@@ -4,8 +4,6 @@ use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Pagination\LengthAwarePaginator;
-use SebastianBerc\Repositories\Contracts\RepositoryInterface;
-use SebastianBerc\Repositories\Contracts\ServiceInterface;
 use SebastianBerc\Repositories\Repository;
 use SebastianBerc\Repositories\Traits\Filterable;
 use SebastianBerc\Repositories\Traits\Sortable;
@@ -17,7 +15,7 @@ use SebastianBerc\Repositories\Traits\Sortable;
  *
  * @package SebastianBerc\Repositories\Services
  */
-class DatabaseService implements ServiceInterface
+class DatabaseService
 {
     use Filterable, Sortable;
 
@@ -39,16 +37,15 @@ class DatabaseService implements ServiceInterface
     protected $instance;
 
     /**
-     * Create a new DatabaseService instance.
+     * Create a new database service instance.
      *
-     * @param Application         $app
-     * @param RepositoryInterface $repository
-     * @param array               $options
+     * @param Application $app
+     * @param Repository  $repository
      */
-    public function __construct(Application $app, Repository $repository, array $options = [])
+    public function __construct(Application $app, Repository $repository)
     {
-        $this->repository = $repository;
         $this->app        = $app;
+        $this->repository = $repository;
     }
 
     /**
