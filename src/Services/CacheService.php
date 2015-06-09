@@ -114,11 +114,7 @@ class CacheService
      */
     protected function cache()
     {
-        if (method_exists($this->cache, 'tags')) {
-            return $this->cache->tags($this->tag);
-        }
-
-        return $this->cache;
+        return $this->cache->tags($this->tag);
     }
 
     /**

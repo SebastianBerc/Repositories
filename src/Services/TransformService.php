@@ -48,6 +48,10 @@ class TransformService
      */
     public function executeOn(Collection $collection)
     {
+        if (empty($collection) || $collection->first() == null) {
+            return $collection;
+        }
+
         $transformer = $this->repository->transformer;
 
         if (!(new \ReflectionClass($transformer))->implementsInterface(TransformerInterface::class)) {
