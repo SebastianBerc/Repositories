@@ -1,6 +1,8 @@
 <?php namespace SebastianBerc\Repositories\Services;
 
 use Illuminate\Contracts\Container\Container as Application;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 use SebastianBerc\Repositories\Repository;
 
 /**
@@ -72,6 +74,8 @@ class CacheService
      */
     public function update($identifier, array $attributes = [])
     {
+        $this->forget('all', ['columns' => ['*']]);
+
         return $this->refresh('update', compact('identifier', 'attributes'));
     }
 
@@ -104,6 +108,10 @@ class CacheService
     {
         $parameters = compact('caller', 'parameters');
 
+        if ($this->repository->model instanceof Eloquent || $this->repository->model instanceof Builder) {
+            $parameters['md5'] = md5(serialize($this->repository->model->getEagerLoads()));
+        }
+
         return md5(serialize($parameters));
     }
 
@@ -127,6 +135,8 @@ class CacheService
      */
     public function store($caller, array $parameters = [])
     {
+        $this->forget('all', ['columns' => ['*']]);
+
         $cacheKey = $this->cacheKey($caller, $parameters);
 
         return $this->cache()->remember($cacheKey, $this->lifetime, function () use ($caller, $parameters) {
@@ -143,6 +153,8 @@ class CacheService
      */
     public function delete($identifier)
     {
+        $this->forget('all', ['columns' => ['*']]);
+
         return $this->forget('delete', compact('identifier'));
     }
 
@@ -158,9 +170,11 @@ class CacheService
     {
         $cacheKey = $this->cacheKey($caller, $parameters);
 
-        $this->cache()->forget($cacheKey);
+        if ($caller == 'delete') {
+            $this->repository->mediator->database($caller, $parameters);
+        }
 
-        return $this->repository->mediator->database($caller, $parameters);
+        return $this->cache()->forget($cacheKey);
     }
 
     /**
