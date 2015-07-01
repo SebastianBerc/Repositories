@@ -1,4 +1,6 @@
-<?php namespace SebastianBerc\Repositories\Contracts;
+<?php
+
+namespace SebastianBerc\Repositories\Contracts;
 
 use Illuminate\Support\Collection;
 

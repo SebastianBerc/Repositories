@@ -1,4 +1,6 @@
-<?php namespace SebastianBerc\Repositories\Exceptions;
+<?php
+
+namespace SebastianBerc\Repositories\Exceptions;
 
 /**
  * Class InvalidRepositoryModel

@@ -1,4 +1,6 @@
-<?php namespace SebastianBerc\Repositories\Test;
+<?php
+
+namespace SebastianBerc\Repositories\Test;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;

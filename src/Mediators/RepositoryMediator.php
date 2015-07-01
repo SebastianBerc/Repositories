@@ -1,4 +1,6 @@
-<?php namespace SebastianBerc\Repositories\Mediators;
+<?php
+
+namespace SebastianBerc\Repositories\Mediators;
 
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -81,7 +83,7 @@ class RepositoryMediator
     }
 
     /**
-     * Execute method with parameters od database service.
+     * Execute method with parameters on database service.
      *
      * @param string $caller
      * @param array  $parameters

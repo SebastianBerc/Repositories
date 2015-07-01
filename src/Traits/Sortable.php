@@ -1,4 +1,6 @@
-<?php namespace SebastianBerc\Repositories\Traits;
+<?php
+
+namespace SebastianBerc\Repositories\Traits;
 
 /**
  * Class Sortable

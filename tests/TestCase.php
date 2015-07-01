@@ -1,4 +1,6 @@
-<?php namespace SebastianBerc\Repositories\Test;
+<?php
+
+namespace SebastianBerc\Repositories\Test;
 
 use Faker\Factory as Faker;
 use Laracasts\TestDummy\Factory as TestDummy;

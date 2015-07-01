@@ -1,4 +1,6 @@
-<?php namespace SebastianBerc\Repositories;
+<?php
+
+namespace SebastianBerc\Repositories;
 
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\Container as Application;

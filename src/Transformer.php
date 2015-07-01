@@ -1,4 +1,6 @@
-<?php namespace SebastianBerc\Repositories;
+<?php
+
+namespace SebastianBerc\Repositories;
 
 use Illuminate\Support\Collection;
 use SebastianBerc\Repositories\Contracts\TransformerInterface;
