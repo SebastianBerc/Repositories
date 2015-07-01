@@ -61,7 +61,7 @@ class DatabaseService
      */
     public function all(array $columns = ['*'])
     {
-        return $this->repository->makeModel()->all($columns);
+        return $this->repository->makeQuery()->get($columns);
     }
 
     /**
@@ -77,9 +77,7 @@ class DatabaseService
      */
     public function where($column, $operator = '=', $value = null, $boolean = 'and', array $columns = ['*'])
     {
-        return $this->repository->makeModel()->query()
-            ->where($column, $operator, $value, $boolean, $columns)
-            ->get($columns);
+        return $this->repository->makeQuery()->where($column, $operator, $value, $boolean, $columns)->get($columns);
     }
 
     /**
@@ -92,7 +90,7 @@ class DatabaseService
      */
     public function paginate($perPage = 15, array $columns = ['*'])
     {
-        return $this->repository->makeModel()->query()->paginate($perPage, $columns);
+        return $this->repository->makeQuery()->paginate($perPage, $columns);
     }
 
     /**
@@ -150,7 +148,7 @@ class DatabaseService
      */
     public function find($identifier, array $columns = ['*'])
     {
-        return $this->repository->makeModel()->find($identifier, $columns);
+        return $this->repository->makeQuery()->find($identifier, $columns);
     }
 
     /**

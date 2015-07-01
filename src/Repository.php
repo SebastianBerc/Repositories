@@ -40,6 +40,13 @@ abstract class Repository implements RepositoryInterface
     public $model;
 
     /**
+     * Contains relations to eager load.
+     *
+     * @var array
+     */
+    public $with = [];
+
+    /**
      * Contains time of caching.
      *
      * @var int
@@ -125,11 +132,29 @@ abstract class Repository implements RepositoryInterface
     /**
      * Return instance of query builder for Eloquent model.
      *
-     * @return \Illuminate\Database\Query\Builder
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     public function makeQuery()
     {
-        return $this->makeModel()->query()->getQuery();
+        return empty($this->with) ? $this->makeModel()->query() : $this->makeModel()->query()->with($this->with);
+    }
+
+    /**
+     * Adds relation to eager loads.
+     *
+     * @param string|string[] $relation
+     *
+     * @return static
+     */
+    public function with($relation)
+    {
+        if (func_num_args() == 1) {
+            $this->with = array_merge($this->with, is_array($relation) ? $relation : [$relation]);
+        } else {
+            $this->with = array_merge($this->with, func_get_args());
+        }
+
+        return $this;
     }
 
     /**

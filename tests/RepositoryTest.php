@@ -162,6 +162,49 @@ class RepositoryTest extends TestCase
     }
 
     /** @test */
+    public function itShouldRetrieveModelWithRelation()
+    {
+        $models = $this->factory()->times(2)->create(RelatedModelStub::class);
+
+        // Test all()
+        $model = $this->repository->with('token')->all()->first();
+        $this->assertEquals($models->first()->user->attributesToArray(), $model->attributesToArray());
+
+        // Test where()
+        /** @var ModelStub $model */
+        $model = $this->repository->where('id', '<>', 1)->first();
+        $this->assertEquals($models->last()->user->attributesToArray(), $model->attributesToArray());
+
+        // Test find()
+        $model = $this->repository->with('token')->find(2);
+        $this->assertEquals($models->last()->user->attributesToArray(), $model->attributesToArray());
+
+        // Test findBy()
+        $model = $this->repository->with('token')->findBy('id', 2);
+        $this->assertEquals($models->last()->user->attributesToArray(), $model->attributesToArray());
+
+        // Test findWhere()
+        $model = $this->repository->with('token')->findWhere(['id' => 2]);
+        $this->assertEquals($models->last()->user->attributesToArray(), $model->attributesToArray());
+
+        // Test paginate()
+        /** @var ModelStub $model */
+        $model = $this->repository->paginate()->items()[0];
+        $this->assertEquals($models->first()->user->attributesToArray(), $model->attributesToArray());
+    }
+
+    /** @test */
+    public function itShouldRetrieveModelWithMoreThenOneRelation()
+    {
+        $models = $this->factory()->times(1)->create(RelatedModelStub::class);
+
+        $model = $this->repository->with('token', 'otherToken')->find(1);
+
+        $this->assertEquals($models->first()->attributesToArray(), $model->token->attributesToArray());
+        $this->assertEquals($models->first()->attributesToArray(), $model->otherToken->attributesToArray());
+    }
+
+    /** @test */
     public function itShouldThrowAnExceptionWhenBadObjectIsGiven()
     {
         $this->setExpectedException(InvalidRepositoryModel::class);
@@ -190,6 +233,28 @@ class ModelStub extends Model
     protected $fillable = ['email', 'password'];
 
     protected $table = 'users';
+
+    public function token()
+    {
+        return $this->hasOne(RelatedModelStub::class, 'id');
+    }
+
+    public function otherToken()
+    {
+        return $this->hasOne(RelatedModelStub::class, 'id');
+    }
+}
+
+class RelatedModelStub extends Model
+{
+    protected $fillable = ['user_id', 'token'];
+
+    protected $table = 'password_resets';
+
+    public function user()
+    {
+        return $this->belongsTo(ModelStub::class);
+    }
 }
 
 class BadRepositoryStub extends Repository

@@ -12,6 +12,14 @@ $factory(
 );
 
 $factory(
+    \SebastianBerc\Repositories\Test\RelatedModelStub::class,
+    [
+        'user_id' => 'factory:' . \SebastianBerc\Repositories\Test\ModelStub::class,
+        'token'   => $faker->md5
+    ]
+);
+
+$factory(
     \SebastianBerc\Repositories\Test\ModelTransformStub::class,
     ['email' => $faker->companyEmail, 'password' => 'secret', 'remember_token' => md5(str_random())]
 );
