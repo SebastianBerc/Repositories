@@ -22,4 +22,4 @@ after_script:
   - php vendor/bin/ocular code-coverage:upload --format=php-clover coverage.clover
 
 before_script:
-  - if [$(phpenv version-name) -eq 7.0]; then echo "extension=xdebug.so" >> ~/.phpenv/versions/7.0/etc/php.ini
+  - if [`phpenv version-name` -eq 7.0]; then echo "extension=xdebug.so" >> ~/.phpenv/versions/7.0/etc/php.ini; fi
