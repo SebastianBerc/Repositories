@@ -89,7 +89,7 @@ class CriteriaService implements ServiceInterface
     /**
      * Execute an criterias from the stack on given query builder.
      *
-     * @param Builder $collection
+     * @param Builder $query
      *
      * @return Builder
      */

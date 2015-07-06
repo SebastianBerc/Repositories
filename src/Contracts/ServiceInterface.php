@@ -18,7 +18,6 @@ interface ServiceInterface
      *
      * @param Application $app
      * @param Repository  $repository
-     * @param int         $lifetime
      */
     public function __construct(Application $app, Repository $repository);
 }
