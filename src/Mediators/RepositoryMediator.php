@@ -7,6 +7,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use SebastianBerc\Repositories\Repository;
 use SebastianBerc\Repositories\Services\CacheService;
+use SebastianBerc\Repositories\Services\CriteriaService;
 use SebastianBerc\Repositories\Services\DatabaseService;
 use SebastianBerc\Repositories\Services\TransformService;
 
@@ -55,6 +56,13 @@ class RepositoryMediator
     protected $transform;
 
     /**
+     * Contains an Criteria service.
+     *
+     * @var CriteriaService
+     */
+    protected $criteria;
+
+    /**
      * Create a new Repositry Mediator instance.
      *
      * @param Repository $repository
@@ -63,9 +71,10 @@ class RepositoryMediator
     {
         $this->app        = $app;
         $this->repository = $repository;
-        $this->cache      = new CacheService($app, $repository, $repository->lifetime ?: 30);
+        $this->cache = new CacheService($app, $repository);
         $this->database   = new DatabaseService($app, $repository);
         $this->transform  = new TransformService($app, $repository);
+        $this->criteria = new CriteriaService($app, $repository);
     }
 
     /**
@@ -141,8 +150,28 @@ class RepositoryMediator
      *
      * @return bool
      */
-    protected function hasTransformer()
+    public function hasTransformer()
     {
         return (bool) $this->repository->transformer;
+    }
+
+    /**
+     * Returns criterias service on model query.
+     *
+     * @return CriteriaService
+     */
+    public function criteria()
+    {
+        return $this->criteria;
+    }
+
+    /**
+     * Determinate if repository has an cratieria.
+     *
+     * @return bool
+     */
+    public function hasCriteria()
+    {
+        return $this->criteria->hasCriteria();
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Pagination\LengthAwarePaginator;
 use SebastianBerc\Repositories\Contracts\RepositoryInterface;
-use SebastianBerc\Repositories\Contracts\ShouldBeCached;
+use SebastianBerc\Repositories\Contracts\ShouldCache;
 use SebastianBerc\Repositories\Contracts\TransformerInterface;
 use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
 use SebastianBerc\Repositories\Exceptions\InvalidTransformer;
@@ -87,9 +87,7 @@ abstract class Repository implements RepositoryInterface
      */
     public static function instance()
     {
-        $app = (function_exists('app') ? app() : Container::getInstance());
-
-        return new static($app);
+        return new static(function_exists('app') ? app() : Container::getInstance());
     }
 
     /**
@@ -108,6 +106,20 @@ abstract class Repository implements RepositoryInterface
         }
 
         return $this->mediator->database($caller, $parameters);
+    }
+
+    /**
+     * Add criteria to next query in repository.
+     *
+     * @param Criteria $criteria
+     *
+     * @return $this
+     */
+    public function citeria(Criteria $criteria)
+    {
+        $this->mediator->criteria()->addCriteria($criteria);
+
+        return $this;
     }
 
     /**
@@ -138,7 +150,13 @@ abstract class Repository implements RepositoryInterface
      */
     public function makeQuery()
     {
-        return empty($this->with) ? $this->makeModel()->query() : $this->makeModel()->query()->with($this->with);
+        $query = $this->makeModel()->query();
+
+        if ($this->mediator->hasCriteria()) {
+            $query = $this->mediator->criteria()->executeOn($this->makeModel()->query());
+        }
+
+        return empty($this->with) ? $query : $query->with($this->with);
     }
 
     /**
@@ -342,11 +360,11 @@ abstract class Repository implements RepositoryInterface
      */
     protected function shouldBeCached()
     {
-        if ($this instanceof ShouldBeCached) {
+        if ($this instanceof ShouldCache) {
             return true;
         }
 
-        return (new \ReflectionClass($this))->implementsInterface(ShouldBeCached::class);
+        return (new \ReflectionClass($this))->implementsInterface(ShouldCache::class);
     }
 
     /**

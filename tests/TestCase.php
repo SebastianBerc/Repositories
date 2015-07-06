@@ -12,7 +12,7 @@ use Laracasts\TestDummy\Factory as TestDummy;
  * @copyright Copyright (c) Sebastian Berć
  * @package   SebastianBerc\Repositories\Test
  */
-class TestCase extends \Orchestra\Testbench\TestCase
+abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
     /**
      * Setup the test environment.

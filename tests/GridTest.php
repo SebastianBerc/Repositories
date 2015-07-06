@@ -5,17 +5,17 @@ namespace SebastianBerc\Repositories\Test;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use SebastianBerc\Repositories\Repository;
 use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
+use SebastianBerc\Repositories\Repository;
 
 /**
- * Class GridRepositoryTest
+ * Class GridTest
  *
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
  * @package   SebastianBerc\Repositories\Test
  */
-class GridRepositoryTest extends TestCase
+class GridTest extends TestCase
 {
     /**
      * @var RepositoryStub

@@ -8,9 +8,9 @@ use SebastianBerc\Repositories\Contracts\TransformerInterface;
 /**
  * Class Transformer
  *
- * @author  Sebastian Berć <sebastian.berc@gmail.com>
- *
- * @package SebastianBerc\Repositories
+ * @author    Sebastian Berć <sebastian.berc@gmail.com>
+ * @copyright Copyright (c) Sebastian Berć
+ * @package   SebastianBerc\Repositories
  */
 abstract class Transformer implements TransformerInterface
 {

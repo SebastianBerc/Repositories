@@ -11,13 +11,13 @@ use SebastianBerc\Repositories\Repository;
 use SebastianBerc\Repositories\Transformer;
 
 /**
- * Class TransformRepositoryResultTest
+ * Class TransformTest
  *
  * @author  Sebastian Berć <sebastian.berc@gmail.com>
  *
  * @package SebastianBerc\Repositories\Test
  */
-class TransformRepositoryResultTest extends TestCase
+class TransformTest extends TestCase
 {
     /**
      * @var RepositoryTransformStub

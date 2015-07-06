@@ -6,6 +6,7 @@ use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Pagination\LengthAwarePaginator;
+use SebastianBerc\Repositories\Contracts\ServiceInterface;
 use SebastianBerc\Repositories\Repository;
 use SebastianBerc\Repositories\Traits\Filterable;
 use SebastianBerc\Repositories\Traits\Sortable;
@@ -13,11 +14,11 @@ use SebastianBerc\Repositories\Traits\Sortable;
 /**
  * Class DatabaseService
  *
- * @author  Sebastian Berć <sebastian.berc@gmail.com>
- *
- * @package SebastianBerc\Repositories\Services
+ * @author    Sebastian Berć <sebastian.berc@gmail.com>
+ * @copyright Copyright (c) Sebastian Berć
+ * @package   SebastianBerc\Repositories\Services
  */
-class DatabaseService
+class DatabaseService implements ServiceInterface
 {
     use Filterable, Sortable;
 

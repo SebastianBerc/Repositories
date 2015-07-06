@@ -5,7 +5,7 @@ namespace SebastianBerc\Repositories\Test;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
-use SebastianBerc\Repositories\Contracts\ShouldBeCached;
+use SebastianBerc\Repositories\Contracts\ShouldCache;
 use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
 use SebastianBerc\Repositories\Repository;
 
@@ -78,8 +78,8 @@ class CacheRepositoryTest extends TestCase
     public function itShouldCreateNewRecordInCache()
     {
         $model = $this->repository->create([
-            'email' => $this->fake()->email,
-            'password' => 'secret',
+            'email'          => $this->fake()->email,
+            'password'       => 'secret',
             'remember_token' => md5(str_random())
         ]);
 
@@ -155,7 +155,7 @@ class CacheRepositoryTest extends TestCase
     }
 }
 
-class CacheRepositoryStub extends Repository implements ShouldBeCached
+class CacheRepositoryStub extends Repository implements ShouldCache
 {
     public function takeModel()
     {
@@ -170,7 +170,7 @@ class CacheModelStub extends Model
     protected $table = 'users';
 }
 
-class BadCacheRepositoryStub extends Repository implements ShouldBeCached
+class BadCacheRepositoryStub extends Repository implements ShouldCache
 {
     public function takeModel()
     {

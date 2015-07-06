@@ -5,6 +5,7 @@ namespace SebastianBerc\Repositories\Services;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use SebastianBerc\Repositories\Contracts\ServiceInterface;
 use SebastianBerc\Repositories\Repository;
 
 /**
@@ -14,7 +15,7 @@ use SebastianBerc\Repositories\Repository;
  * @copyright Copyright (c) Sebastian Berć
  * @package   SebastianBerc\Repositories\Services
  */
-class CacheService
+class CacheService implements ServiceInterface
 {
     /**
      * Contains instance of repository.
@@ -58,10 +59,10 @@ class CacheService
      * @param Repository  $repository
      * @param int         $lifetime
      */
-    public function __construct(Application $app, Repository $repository, $lifetime = 30)
+    public function __construct(Application $app, Repository $repository)
     {
         $this->repository = $repository;
-        $this->lifetime   = $lifetime;
+        $this->lifetime = $repository->lifetime ?: 30;
         $this->tag        = $repository->makeModel()->getTable();
         $this->cache      = $app->make('cache.store');
     }
@@ -111,7 +112,11 @@ class CacheService
         $parameters = compact('caller', 'parameters');
 
         if ($this->repository->model instanceof Eloquent || $this->repository->model instanceof Builder) {
-            $parameters['md5'] = md5(serialize($this->repository->model->getEagerLoads()));
+            $parameters['eager'] = md5(serialize($this->repository->with));
+        }
+
+        if ($this->repository->mediator->criteria()->hasCriteria()) {
+            $parameters['criteria'] = md5(serialize($this->repository->mediator->criteria()->getCriterias()));
         }
 
         return md5(serialize($parameters));

@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * Class Filterable
  *
- * @author  Sebastian Berć <sebastian.berc@gmail.com>
- *
- * @package SebastianBerc\Repositories\Traits
+ * @author    Sebastian Berć <sebastian.berc@gmail.com>
+ * @copyright Copyright (c) Sebastian Berć
+ * @package   SebastianBerc\Repositories\Traits
  */
 trait Filterable
 {

@@ -7,9 +7,9 @@ use Illuminate\Support\Collection;
 /**
  * Interface TransformerInterface
  *
- * @author  Sebastian Berć <sebastian.berc@gmail.com>
- *
- * @package SebastianBerc\Repositories\Contracts
+ * @author    Sebastian Berć <sebastian.berc@gmail.com>
+ * @copyright Copyright (c) Sebastian Berć
+ * @package   SebastianBerc\Repositories\Contracts
  */
 interface TransformerInterface
 {

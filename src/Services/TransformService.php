@@ -4,6 +4,7 @@ namespace SebastianBerc\Repositories\Services;
 
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Support\Collection;
+use SebastianBerc\Repositories\Contracts\ServiceInterface;
 use SebastianBerc\Repositories\Contracts\TransformerInterface;
 use SebastianBerc\Repositories\Exceptions\InvalidTransformer;
 use SebastianBerc\Repositories\Repository;
@@ -15,7 +16,7 @@ use SebastianBerc\Repositories\Repository;
  * @copyright Copyright (c) Sebastian Berć
  * @package   SebastianBerc\Repositories\Services
  */
-class TransformService
+class TransformService implements ServiceInterface
 {
     /**
      * Contains Laravel Application instance.
