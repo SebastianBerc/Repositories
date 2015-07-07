@@ -207,6 +207,20 @@ $repository->simpleFetch($page = 1, $perPage = 15, array $columns = ['*'], array
 $repository->simpleFetch(1, 15, ['*'], ['activated' => true, 'banned' => 'false'], ['id' => 'ASC']);
 ```
 
+#### Eager loads
+
+If your model has a relationship and you want to load it, you can do this with query results by calling the `with` method, for example:
+
+``` php 
+// Definition:
+$repository->with($relations);
+// Examples:
+$repository->with('roles')->all();
+$repository->with('roles', 'permissions')->all();
+$repository->with(['roles', 'permissions])->all();
+
+```
+
 #### Criteria
 
 Sometimes you need to prepare repeatable query that displays, for example, only active and not banned users or the latest news from the week before - to do this you can use a criteria:
