@@ -206,7 +206,7 @@ class DatabaseService implements ServiceInterface
      */
     public function fetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
     {
-        $this->instance = $this->repository->makeModel();
+        $this->instance = $this->repository->makeQuery();
 
         $this->multiFilterBy($filter)->multiSortBy($sort);
 
@@ -232,7 +232,7 @@ class DatabaseService implements ServiceInterface
      */
     public function simpleFetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
     {
-        $this->instance = $this->repository->makeModel();
+        $this->instance = $this->repository->makeQuery();
 
         $this->multiFilterBy($filter)->multiSortBy($sort);
 
