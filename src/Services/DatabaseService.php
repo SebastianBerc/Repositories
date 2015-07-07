@@ -169,7 +169,7 @@ class DatabaseService implements ServiceInterface
     }
 
     /**
-     * Find a model by its specified columns and values.
+     * Find a model by its specified columns and values presented as array.
      *
      * @param array    $wheres
      * @param string[] $columns

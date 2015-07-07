@@ -16,7 +16,7 @@
     }
   ],
   "require": {
-    "php": ">=5.5.0",
+    "php": ">=5.5.9",
     "illuminate/contracts": "~5.0|~5.1",
     "illuminate/database": "~5.0|~5.1"
   },
