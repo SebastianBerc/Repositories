@@ -45,7 +45,7 @@ trait Filterable
     {
         list($relation, $column) = explode('.', $column);
 
-        $column = $this->instance->$relation()->getModel()->getTable() . '.' . $column;
+        $column = $this->repository->makeModel()->$relation()->getModel()->getTable() . '.' . $column;
 
         $this->instance = $this->instance->whereHas(
             $relation,
@@ -67,6 +67,8 @@ trait Filterable
      */
     public function filterBy($column, $value = null)
     {
+        $column = $this->repository->makeModel()->getTable() . '.' . $column;
+
         $this->instance = $this->instance->where($column, 'like', "%$value%");
 
         return $this;

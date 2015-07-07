@@ -23,13 +23,19 @@ class GridTest extends TestCase
     protected $repository;
 
     /**
+     * @var OtherGridRepositoryStub
+     */
+    protected $otherRepository;
+
+    /**
      * {@inheritdoc}
      */
     public function setUp()
     {
         parent::setUp();
 
-        $this->repository = new GridRepositoryStub($this->app);
+        $this->repository      = new GridRepositoryStub($this->app);
+        $this->otherRepository = new OtherGridRepositoryStub($this->app);
     }
 
     /** @test */
@@ -65,7 +71,10 @@ class GridTest extends TestCase
     /** @test */
     public function itShouldFetchFirstCollectionPageSortedDescendingByRelationFieldFromDatabase()
     {
-        $this->factory()->times(4)->create(PasswordReset::class);
+        $this->factory()->times(3)->create(PasswordReset::class);
+        $this->factory()->times(1)->create(PasswordReset::class, [
+            'user_id' => $this->factory()->times(1)->create(User::class, ['email' => '00000@gmail.com'])->getKey()
+        ]);
         $this->factory()->times(1)->create(PasswordReset::class, ['token' => '000a0a0ea0813aef2f6c6dfd3a49c546']);
 
         $paginator = $this->repository->fetch(1, 5, ['*'], [], ['password.token' => 'ASC']);
@@ -74,10 +83,10 @@ class GridTest extends TestCase
         $this->assertEquals(5, sizeof($paginator->items()));
         $this->assertEquals(5, current($paginator->items())->getKey());
 
-        $paginator = $this->repository->fetch(1, 5, ['*'], [], ['password.token' => 'DESC']);
+        $paginator = $this->otherRepository->fetch(1, 5, ['*'], [], ['user.email' => 'DESC']);
 
         $this->assertEquals(5, sizeof($paginator->items()));
-        $this->assertEquals(5, last($paginator->items())->getKey());
+        $this->assertEquals(4, last($paginator->items())->getKey());
     }
 
     /** @test */
@@ -143,12 +152,23 @@ class GridRepositoryStub extends Repository
     }
 }
 
+class OtherGridRepositoryStub extends Repository
+{
+    public function takeModel()
+    {
+        return PasswordReset::class;
+    }
+}
+
 class User extends Model
 {
     protected $fillable = ['email', 'password'];
 
     protected $table = 'users';
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function password()
     {
         return $this->hasOne(PasswordReset::class, 'id');
@@ -158,6 +178,14 @@ class User extends Model
 class PasswordReset extends Model
 {
     protected $fillable = ['user_id', 'token'];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
 
 class BadGridRepositoryStub extends Repository
