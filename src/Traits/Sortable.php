@@ -50,11 +50,11 @@ trait Sortable
         /** @var BelongsTo|HasOne $relationClass */
         $relationClass = $this->repository->makeModel()->$relation();
 
-        switch (class_basename(get_class($relationClass))) {
-            case 'BelongsTo':
+        switch (get_class($relationClass)) {
+            case BelongsTo::class:
                 $this->instance = $this->joinBelongsTo($relationClass);
                 break;
-            case 'HasOne':
+            case HasOne::class:
                 $this->instance = $this->joinHasOne($relationClass);
                 break;
         }
