@@ -146,7 +146,7 @@ $model->activated = true;
 $repository->update($model, ['banned' => false]);
 ```
 
-Delete the model from the database:
+delete the model from the database:
 
 ```
 // Definition:
@@ -155,7 +155,7 @@ $repository->delete($identifier);
 $repository->delete(1);
 ```
 
-Find a model (only first result) by its primary key:
+find a model (only first result) by its primary key:
 
 ```
 // Definition:
@@ -164,7 +164,7 @@ $repository->find($identifier, array $columns = ['*']);
 $repository->find(1, ['name', 'value']);
 ```
 
-Find a model (only first result) by its specified column and value:
+find a model (only first result) by its specified column and value:
 
 ```
 // Definition:
@@ -173,7 +173,7 @@ $repository->findBy($column, $value, array $columns = ['*']);
 $repository->findBy('activated', true, ['id']);
 ```
 
-Find a model (only first result) by its specified columns and values presented as array:
+find a model (only first result) by its specified columns and values presented as array:
 
 ```
 // Definition:
@@ -182,14 +182,14 @@ $repository->findWhere(array $wheres, array $columns = ['*']);
 $repository->findWhere(['activated' => true, 'banned' => false], ['id']);
 ```
 
-Return total count of whole collection based on current query:
+return total count of whole collection based on current query:
 
 ```
 // Definition and example:
 $repository->count();
 ```
 
-Fetch collection ordered and filtrated by specified columns for specified page and this method will return instance of `LengthAwarePaginator`:
+fetch collection ordered and filtrated by specified columns for specified page and this method will return instance of `LengthAwarePaginator`:
 
 ```
 // Definition:
@@ -198,7 +198,7 @@ $repository->fetch($page = 1, $perPage = 15, array $columns = ['*'], array $filt
 $repository->fetch(1, 15, ['*'], ['activated' => true, 'banned' => 'false'], ['id' => 'ASC']);
 ```
 
-Fetch simple collection without `LengthAwarePaginator`, but ordered and filtrated by specified columns for specified page:
+fetch simple collection without `LengthAwarePaginator`, but ordered and filtrated by specified columns for specified page:
 
 ```
 // Definition:
