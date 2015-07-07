@@ -11,7 +11,7 @@
 
 Via Composer
 
-```
+``` bash
 $ composer require sebastian-berc/repositories
 ```
 
@@ -19,7 +19,7 @@ $ composer require sebastian-berc/repositories
 
 Make your own repository with extends the abstract `\SebastianBerc\Repositories\Repository` class and implement `takeModel` method:
 
-```
+``` php
 class MyRepository extends \SebastianBerc\Repositories\Repository
 {
     /**
@@ -38,7 +38,7 @@ class MyRepository extends \SebastianBerc\Repositories\Repository
 
 Wherever Laravel provides dependency injection you can attach your repository like this:
 
-```
+``` php
 class UsersController extends Controller 
 {
     /**
@@ -64,7 +64,7 @@ class UsersController extends Controller
 
 If you need a repository without dependency injection you can use the static method like this:
 
-```
+``` php
 	/**
 	 * Creates a new users.
 	 */
@@ -82,7 +82,7 @@ This gives you access to methods such as...
 
 creating a new query to get all results from repository:
 
-```
+``` php
 // Definition:
 $repository->all(array $columns = ['*']);
 // Example:
@@ -91,7 +91,7 @@ $users = $repository->all(['name', 'value']);
 
 [Need fix] creating a new basic where query clause on model and returns results:
 
-```
+``` php
 // Definition:
 $repository->where($column, $operator = '=', $value = null, $boolean = 'and', array $columns = ['*']);
 // Example:
@@ -100,7 +100,7 @@ $repository->where('id', '<>', \Auth::user()->getKey(), 'and', ['activated', 'ba
 
 creating a new query with pagination:
 
-```
+``` php
 // Definition:
 $repository->paginate($perPage = 15, array $columns = ['*']);
 // Example:
@@ -109,7 +109,7 @@ $repository->paginate(50, ['name', 'value']);
 
 saving a new model and return the instance:
 
-```
+``` php
 // Definition:
 $repository->create(array $attributes = []);
 // Example:
@@ -118,7 +118,7 @@ $repository->create(['activated' => true, 'banned' => false]);
 
 saving or updates the model in the database.
 
-```
+``` php
 // Definition:
 $repository->update($identifier, array $attributes = []);
 // Example:
@@ -126,7 +126,7 @@ $repository->update(1, ['activated' => true, 'banned' => false]);
 ```
 Also you can pass a model:
 
-```
+``` php
 // Definition:
 $repository->update($dirtyModel);
 // Example:
@@ -137,7 +137,7 @@ $repository->update($model);
 
 even with additional attributes:
 
-```
+``` php
 // Definition:
 $repository->update($dirtyModel, ['activated' => true]);
 // Example:
@@ -148,7 +148,7 @@ $repository->update($model, ['banned' => false]);
 
 delete the model from the database:
 
-```
+``` php
 // Definition:
 $repository->delete($identifier);
 // Example:
@@ -157,7 +157,7 @@ $repository->delete(1);
 
 find a model (only first result) by its primary key:
 
-```
+``` php
 // Definition:
 $repository->find($identifier, array $columns = ['*']);
 // Example:
@@ -166,7 +166,7 @@ $repository->find(1, ['name', 'value']);
 
 find a model (only first result) by its specified column and value:
 
-```
+``` php
 // Definition:
 $repository->findBy($column, $value, array $columns = ['*']);
 // Example:
@@ -175,7 +175,7 @@ $repository->findBy('activated', true, ['id']);
 
 find a model (only first result) by its specified columns and values presented as array:
 
-```
+``` php
 // Definition:
 $repository->findWhere(array $wheres, array $columns = ['*']);
 // Example:
@@ -184,14 +184,14 @@ $repository->findWhere(['activated' => true, 'banned' => false], ['id']);
 
 return total count of whole collection based on current query:
 
-```
+``` php
 // Definition and example:
 $repository->count();
 ```
 
 fetch collection ordered and filtrated by specified columns for specified page and this method will return instance of `LengthAwarePaginator`:
 
-```
+``` php
 // Definition:
 $repository->fetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = []);
 // Example:
@@ -200,7 +200,7 @@ $repository->fetch(1, 15, ['*'], ['activated' => true, 'banned' => 'false'], ['i
 
 fetch simple collection without `LengthAwarePaginator`, but ordered and filtrated by specified columns for specified page:
 
-```
+``` php
 // Definition:
 $repository->simpleFetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = []);
 // Example:
@@ -211,7 +211,7 @@ $repository->simpleFetch(1, 15, ['*'], ['activated' => true, 'banned' => 'false'
 
 Sometimes you need to prepare repeatable query that displays, for example, only active and not banned users or the latest news from the week before - to do this you can use a criteria:
 
-```
+``` php
 class ActivatedAndNotBanned extends \SebastianBerc\Repositories\Criteria
 {
     public function execute(Builder $query)
@@ -223,7 +223,7 @@ class ActivatedAndNotBanned extends \SebastianBerc\Repositories\Criteria
 
 Now you can use your criteria with repository:
 
-```
+``` php
 $repository->criteria(new ActivatedAndNotBanned())->all();
 ```
 
@@ -231,7 +231,7 @@ $repository->criteria(new ActivatedAndNotBanned())->all();
 
 The data from your repositories can be sent to different places, for example, it may be your site or the same data with the exclusion of several columns can be shared with Web API, you can achieve through class `Transfomer`:
 
-```
+``` php
 class UsersForListing extends \SebastianBerc\Repositories\Transformer
 {
     public function transform($item)
@@ -246,7 +246,7 @@ class UsersForListing extends \SebastianBerc\Repositories\Transformer
 
 When you have your own `Transformer` you can apply it to repository:
 
-```
+``` php
 $repository->setTransformer(UsersForListing::class)->all();
 
 ```
@@ -256,7 +256,7 @@ $repository->setTransformer(UsersForListing::class)->all();
 
 To hold query results in a cache just add the implementation of the interface `ShouldCache` to your repository:
 
-```
+``` php
 class MyRepository extends \SebastianBerc\Repositories\Repository implements \SebastianBerc\Repositories\Contracts\ShouldCache
 {
     /**
