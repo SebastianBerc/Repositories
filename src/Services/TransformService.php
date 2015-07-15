@@ -51,7 +51,7 @@ class TransformService implements ServiceInterface
      */
     public function executeOn(Collection $collection)
     {
-        if (empty($collection) || $collection->first() == null) {
+        if (empty($collection) || $collection->first() === null) {
             return $collection;
         }
 
