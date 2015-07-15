@@ -115,7 +115,7 @@ abstract class Repository implements RepositoryInterface
      *
      * @return $this
      */
-    public function citeria(Criteria $criteria)
+    public function criteria(Criteria $criteria)
     {
         $this->mediator->criteria()->addCriteria($criteria);
 
@@ -132,7 +132,8 @@ abstract class Repository implements RepositoryInterface
     /**
      * Return instance of Eloquent model.
      *
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return Eloquent
+     * @throws InvalidRepositoryModel
      */
     public function makeModel()
     {
@@ -183,6 +184,7 @@ abstract class Repository implements RepositoryInterface
      * @param string $transformer
      *
      * @return static
+     * @throws InvalidTransformer
      */
     public function setTransformer($transformer)
     {
