@@ -194,7 +194,7 @@ class DatabaseService implements ServiceInterface
     }
 
     /**
-     * Fetch collection ordered and filtrated by specified columns for specified page.
+     * Fetch collection ordered and filtrated by specified columns for specified page as paginator.
      *
      * @param int   $page
      * @param int   $perPage
@@ -222,6 +222,8 @@ class DatabaseService implements ServiceInterface
     }
 
     /**
+     * Fetch collection ordered and filtrated by specified columns for specified page.
+     *
      * @param int   $page
      * @param int   $perPage
      * @param array $columns
