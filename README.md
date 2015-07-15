@@ -1,9 +1,10 @@
 # Repositories
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/sebastian-berc/repositories.svg?style=flat-square)](https://packagist.org/packages/SebastianBerc/repository)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/sebastian-berc/repositories.svg?style=flat-square)](https://packagist.org/packages/sebastian-berc/repositories)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Build Status](https://img.shields.io/travis/SebastianBerc/Repositories/master.svg?style=flat-square)](https://travis-ci.org/SebastianBerc/Repositories)
 [![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/SebastianBerc/Repositories.svg?style=flat-square)](https://scrutinizer-ci.com/g/SebastianBerc/Repositories/code-structure)
+[![SensioLabs Insight](https://img.shields.io/sensiolabs/i/168dab35-a889-4b1c-99e7-6e0e44f611f6.svg?style=flat-square)](https://insight.sensiolabs.com/projects/168dab35-a889-4b1c-99e7-6e0e44f611f6)
 [![Quality Score](https://img.shields.io/scrutinizer/g/SebastianBerc/Repositories.svg?style=flat-square)](https://scrutinizer-ci.com/g/SebastianBerc/Repositories)
 [![Total Downloads](https://img.shields.io/packagist/dt/sebastian-berc/repositories.svg?style=flat-square)](https://packagist.org/packages/sebastian-berc/repositories)
 
