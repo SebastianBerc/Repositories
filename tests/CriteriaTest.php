@@ -31,7 +31,7 @@ class CriteriaTest extends TestCase
     {
         $this->factory()->times(20)->create(User::class);
 
-        $this->assertEquals(1, (new RepositoryStub($this->app))->citeria(new CriteriaStub())->all()->count());
+        $this->assertEquals(1, (new RepositoryStub($this->app))->criteria(new CriteriaStub())->all()->count());
     }
 
     /** @test */
@@ -39,7 +39,7 @@ class CriteriaTest extends TestCase
     {
         $this->factory()->times(20)->create(User::class);
 
-        $this->assertEquals(1, (new CacheRepositoryStub($this->app))->citeria(new CriteriaStub())->all()->count());
+        $this->assertEquals(1, (new CacheRepositoryStub($this->app))->criteria(new CriteriaStub())->all()->count());
     }
 }
 
