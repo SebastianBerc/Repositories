@@ -13,5 +13,12 @@ use Illuminate\Database\Eloquent\Builder;
  */
 interface CriteriaInterface
 {
+    /**
+     * Execute criteria on given query builder.
+     *
+     * @param Builder $query
+     *
+     * @return mixed
+     */
     public function execute(Builder $query);
 }

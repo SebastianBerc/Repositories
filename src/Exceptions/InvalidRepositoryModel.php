@@ -13,6 +13,9 @@ class InvalidRepositoryModel extends \Exception
 {
     /**
      * Create a new InvalidRepositoryModel instance.
+     *
+     * @param string $model
+     * @param int    $interface
      */
     public function __construct($model, $interface)
     {

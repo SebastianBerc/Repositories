@@ -47,7 +47,10 @@ class TransformService implements ServiceInterface
     /**
      * Execute transform method on specified transformer.
      *
-     * @return \Illuminate\Support\Collection
+     * @param Collection $collection
+     *
+     * @return Collection
+     * @throws InvalidTransformer
      */
     public function executeOn(Collection $collection)
     {
