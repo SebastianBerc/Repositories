@@ -61,7 +61,7 @@ class CacheService implements ServiceInterface
     public function __construct(Application $app, Repository $repository)
     {
         $this->repository = $repository;
-        $this->lifetime = $repository->lifetime ?: 30;
+        $this->lifetime   = $repository->lifetime ?: 30;
         $this->tag        = $repository->makeModel()->getTable();
         $this->cache      = $app->make('cache.store');
     }
@@ -128,7 +128,7 @@ class CacheService implements ServiceInterface
      */
     protected function cache()
     {
-        return $this->cache->tags($this->tag);
+        return method_exists($this->cache, 'tags') ? $this->cache->tags($this->tag) : $this->cache;
     }
 
     /**
