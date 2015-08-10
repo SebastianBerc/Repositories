@@ -63,7 +63,7 @@ class UsersController extends Controller
 
 #### Usage without Dependency Injection
 
-If you need a repository without dependency injection you can use the static method like this:
+If you need a repository without dependency injection you can use the static method or just construct new instance like this:
 
 ``` php
 	/**
@@ -72,6 +72,7 @@ If you need a repository without dependency injection you can use the static met
     public function store(Request $request)
     {
         $repository = UsersRepository::instance();
+        $repository = new UsersRepository();
         
         return $repository->create($request->all());
     }
