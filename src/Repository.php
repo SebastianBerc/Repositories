@@ -56,7 +56,7 @@ abstract class Repository implements RepositoryInterface
     public $lifetime;
 
     /**
-     * Contains transformer instance.
+     * Contains transfosrmer instance.
      *
      * @var string
      */
@@ -71,13 +71,11 @@ abstract class Repository implements RepositoryInterface
 
     /**
      * Create a new RepositoryInterface instance.
-     *
-     * @param Application $app
      */
-    public function __construct(Application $app)
+    public function __construct()
     {
-        $this->app      = $app;
-        $this->mediator = new RepositoryMediator($app, $this);
+        $this->app      = function_exists('app') ? app() : Container::getInstance();
+        $this->mediator = new RepositoryMediator($this->app, $this);
     }
 
     /**
