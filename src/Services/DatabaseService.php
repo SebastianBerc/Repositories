@@ -182,6 +182,19 @@ class DatabaseService implements ServiceInterface
     }
 
     /**
+     * Find a model by its primary key.
+     *
+     * @param array    $identifiers
+     * @param string[] $columns
+     *
+     * @return Collection
+     */
+    public function findMany($identifiers, array $columns = ['*'])
+    {
+        return $this->repository->makeQuery()->findMany($identifiers, $columns);
+    }
+
+    /**
      * Returns total count of whole collection.
      *
      * @return int
