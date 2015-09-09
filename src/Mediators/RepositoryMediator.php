@@ -56,16 +56,17 @@ class RepositoryMediator
     protected $transform;
 
     /**
-     * Contains an Criteria service.
+     * Contains an criteria service.
      *
      * @var CriteriaService
      */
     protected $criteria;
 
     /**
-     * Create a new Repositry Mediator instance.
+     * Create a new repository mediator instance.
      *
-     * @param Repository $repository
+     * @param Application $app
+     * @param Repository  $repository
      */
     public function __construct(Application $app, Repository $repository)
     {
@@ -156,7 +157,7 @@ class RepositoryMediator
     }
 
     /**
-     * Returns criterias service on model query.
+     * Returns criteria service on model query.
      *
      * @return CriteriaService
      */
@@ -166,7 +167,7 @@ class RepositoryMediator
     }
 
     /**
-     * Determinate if repository has an cratieria.
+     * Determinate if repository has an criteria.
      *
      * @return bool
      */

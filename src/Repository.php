@@ -281,11 +281,17 @@ abstract class Repository implements RepositoryInterface
      * @param int      $identifier
      * @param string[] $columns
      *
-     * @return Eloquent
+     * @return Eloquent|Collection
      */
     public function find($identifier, array $columns = ['*'])
     {
-        return $this->mediator->transform($this->mediator(func_get_args()))->first();
+        $collection = $this->mediator->transform($this->mediator(func_get_args()));
+
+        if ($collection->isEmpty()) {
+            return null;
+        }
+
+        return $collection->count() === 1 ? $collection->first() : $collection;
     }
 
     /**
@@ -313,6 +319,19 @@ abstract class Repository implements RepositoryInterface
     public function findWhere(array $wheres, array $columns = ['*'])
     {
         return $this->mediator->transform($this->mediator(func_get_args()))->first();
+    }
+
+    /**
+     * Find a models by its primary key.
+     *
+     * @param int   $identifier
+     * @param array $columns
+     *
+     * @return Collection
+     */
+    public function findMany($identifier, array $columns = ['*'])
+    {
+        return $this->mediator->transform($this->mediator(func_get_args()));
     }
 
     /**
