@@ -65,16 +65,17 @@ class RepositoryMediator
     /**
      * Create a new Repositry Mediator instance.
      *
-     * @param Repository $repository
+     * @param Application $app
+     * @param Repository  $repository
      */
     public function __construct(Application $app, Repository $repository)
     {
         $this->app        = $app;
         $this->repository = $repository;
-        $this->cache = new CacheService($app, $repository);
+        $this->cache      = new CacheService($app, $repository);
         $this->database   = new DatabaseService($app, $repository);
         $this->transform  = new TransformService($app, $repository);
-        $this->criteria = new CriteriaService($app, $repository);
+        $this->criteria   = new CriteriaService($app, $repository);
     }
 
     /**
@@ -156,7 +157,7 @@ class RepositoryMediator
     }
 
     /**
-     * Returns criterias service on model query.
+     * Returns criteria service on model query.
      *
      * @return CriteriaService
      */
@@ -166,7 +167,7 @@ class RepositoryMediator
     }
 
     /**
-     * Determinate if repository has an cratieria.
+     * Determinate if repository has an criteria.
      *
      * @return bool
      */
