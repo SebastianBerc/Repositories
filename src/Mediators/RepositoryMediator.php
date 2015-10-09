@@ -72,10 +72,10 @@ class RepositoryMediator
     {
         $this->app        = $app;
         $this->repository = $repository;
-        $this->cache = new CacheService($app, $repository);
+        $this->cache      = new CacheService($app, $repository);
         $this->database   = new DatabaseService($app, $repository);
         $this->transform  = new TransformService($app, $repository);
-        $this->criteria = new CriteriaService($app, $repository);
+        $this->criteria   = new CriteriaService($app, $repository);
     }
 
     /**

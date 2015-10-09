@@ -5,8 +5,8 @@ namespace SebastianBerc\Repositories\Services;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use SebastianBerc\Repositories\Contracts\CriteriaInterface;
 use SebastianBerc\Repositories\Contracts\ServiceInterface;
-use SebastianBerc\Repositories\Criteria;
 use SebastianBerc\Repositories\Repository;
 
 /**
@@ -55,11 +55,11 @@ class CriteriaService implements ServiceInterface
     /**
      * Add criteria to stack.
      *
-     * @param Criteria $criteria
+     * @param CriteriaInterface $criteria
      *
      * @return $this
      */
-    public function addCriteria(Criteria $criteria)
+    public function addCriteria(CriteriaInterface $criteria)
     {
         $this->stack->push($criteria);
 
@@ -87,6 +87,28 @@ class CriteriaService implements ServiceInterface
     }
 
     /**
+     * Remove one or all criteria from stack.
+     *
+     * @param string $criteriaName
+     *
+     * @return bool
+     */
+    public function removeCriteria($criteriaName = '')
+    {
+        if (!empty($criteriaName)) {
+            $this->stack = $this->stack->filter(function (CriteriaInterface $criteria) use ($criteriaName) {
+                return !is_a($criteria, $criteriaName);
+            });
+
+            return true;
+        }
+
+        $this->stack = new Collection();
+
+        return true;
+    }
+
+    /**
      * Execute an criterias from the stack on given query builder.
      *
      * @param Builder $query
@@ -95,11 +117,9 @@ class CriteriaService implements ServiceInterface
      */
     public function executeOn(Builder $query)
     {
-        $this->stack->each(function (Criteria $criteria) use ($query) {
+        $this->stack->each(function (CriteriaInterface $criteria) use ($query) {
             $criteria->execute($query);
         });
-
-        $this->stack = new Collection();
 
         return $query;
     }
