@@ -4,6 +4,7 @@ namespace SebastianBerc\Repositories\Test;
 
 use Illuminate\Database\Eloquent\Builder;
 use SebastianBerc\Repositories\Criteria;
+use SebastianBerc\Repositories\Exceptions\InvalidCriteria;
 
 /**
  * Class CriteriaTest
@@ -40,6 +41,32 @@ class CriteriaTest extends TestCase
         $this->factory()->times(20)->create(User::class);
 
         $this->assertEquals(1, (new CacheRepositoryStub($this->app))->criteria(new CriteriaStub())->all()->count());
+    }
+
+    /** @test */
+    public function itShouldRemoveCriteriaFromStack()
+    {
+        $this->repository = new CacheRepositoryStub($this->app);
+
+        $this->repository->criteria(new CriteriaStub());
+
+        $this->assertTrue($this->repository->criteria()->removeCriteria(CriteriaStub::class));
+        $this->assertEquals($this->repository->criteria()->getCriterias(), []);
+
+        $this->repository->criteria(new CriteriaStub());
+
+        $this->assertTrue($this->repository->criteria()->removeCriteria());
+        $this->assertEquals($this->repository->criteria()->getCriterias(), []);
+    }
+
+    /** @test */
+    public function itShouldThrowAnExceptionWhenInvalidCriteriaIsGiven()
+    {
+        $this->setExpectedException(InvalidCriteria::class);
+
+        $this->repository = new CacheRepositoryStub($this->app);
+
+        $this->repository->criteria('InvalidCriteria');
     }
 }
 

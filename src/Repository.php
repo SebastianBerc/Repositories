@@ -7,12 +7,15 @@ use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Pagination\LengthAwarePaginator;
+use SebastianBerc\Repositories\Contracts\CriteriaInterface;
 use SebastianBerc\Repositories\Contracts\RepositoryInterface;
 use SebastianBerc\Repositories\Contracts\ShouldCache;
 use SebastianBerc\Repositories\Contracts\TransformerInterface;
+use SebastianBerc\Repositories\Exceptions\InvalidCriteria;
 use SebastianBerc\Repositories\Exceptions\InvalidRepositoryModel;
 use SebastianBerc\Repositories\Exceptions\InvalidTransformer;
 use SebastianBerc\Repositories\Mediators\RepositoryMediator;
+use SebastianBerc\Repositories\Services\CriteriaService;
 use SebastianBerc\Repositories\Traits\Filterable;
 use SebastianBerc\Repositories\Traits\Sortable;
 
@@ -101,7 +104,7 @@ abstract class Repository implements RepositoryInterface
     {
         $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]["function"];
 
-        if ($this->shouldBeCached()) {
+        if ($this->shouldCache()) {
             return $this->mediator->cache($caller, $parameters);
         }
 
@@ -109,14 +112,23 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
-     * Add criteria to next query in repository.
+     * Add criteria to repository query or return criteria service.
      *
-     * @param Criteria $criteria
+     * @param CriteriaInterface|null $criteria
      *
-     * @return $this
+     * @return CriteriaService|$this
+     * @throws InvalidCriteria
      */
-    public function criteria(Criteria $criteria)
+    public function criteria($criteria = null)
     {
+        if (is_null($criteria)) {
+            return $this->mediator->criteria();
+        }
+
+        if (!is_null($criteria) && !is_a($criteria, CriteriaInterface::class)) {
+            throw new InvalidCriteria;
+        }
+
         $this->mediator->criteria()->addCriteria($criteria);
 
         return $this;
@@ -356,11 +368,11 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
-     *
+     * Determinate if repository should be cached.
      *
      * @return bool
      */
-    protected function shouldBeCached()
+    protected function shouldCache()
     {
         if ($this instanceof ShouldCache) {
             return true;
