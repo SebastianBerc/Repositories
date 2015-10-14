@@ -338,6 +338,19 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
+     * Find a models by its primary key.
+     *
+     * @param int   $identifier
+     * @param array $columns
+     *
+     * @return Collection
+     */
+    public function findMany($identifier, array $columns = ['*'])
+    {
+        return $this->mediator->transform($this->mediator(func_get_args()));
+    }
+
+    /**
      * Search the models in search of words in a given phrase to the specified columns.
      *
      * @param string $search

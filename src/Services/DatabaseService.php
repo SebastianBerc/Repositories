@@ -183,6 +183,19 @@ class DatabaseService implements ServiceInterface
     }
 
     /**
+     * Find a models by its primary key.
+     *
+     * @param array    $identifiers
+     * @param string[] $columns
+     *
+     * @return Collection
+     */
+    public function findMany($identifiers, array $columns = ['*'])
+    {
+        return $this->repository->makeQuery()->findMany($identifiers, $columns);
+    }
+
+    /**
      * Search the models in search of words in a given phrase to the specified columns.
      *
      * @param string $search
