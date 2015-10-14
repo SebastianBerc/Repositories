@@ -4,6 +4,7 @@ namespace SebastianBerc\Repositories;
 
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\Container as Application;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -68,6 +69,23 @@ abstract class Repository implements RepositoryInterface
      * @var RepositoryMediator
      */
     public $mediator;
+
+    /**
+     * Array of searchable fields with scores.
+     *
+     * @var array
+     */
+    protected $searchable = [];
+
+    /**
+     * Returns column names to search with his score.
+     *
+     * @return array
+     */
+    public function getSearchableFields()
+    {
+        return $this->searchable;
+    }
 
     /**
      * Create a new RepositoryInterface instance.
@@ -152,7 +170,7 @@ abstract class Repository implements RepositoryInterface
         $query = $this->makeModel()->query();
 
         if ($this->mediator->hasCriteria()) {
-            $query = $this->mediator->criteria()->executeOn($this->makeModel()->query());
+            $query = $this->mediator->criteria()->executeOn($query);
         }
 
         return empty($this->with) ? $query : $query->with($this->with);
@@ -320,16 +338,17 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
-     * Find a models by its primary key.
+     * Search the models in search of words in a given phrase to the specified columns.
      *
-     * @param int   $identifier
-     * @param array $columns
+     * @param string $search
+     * @param array  $columns
+     * @param float  $threshold
      *
-     * @return Collection
+     * @return Builder
      */
-    public function findMany($identifier, array $columns = ['*'])
+    public function search($search, array $columns = [], $threshold = null)
     {
-        return $this->mediator->transform($this->mediator(func_get_args()));
+        return $this->mediator(func_get_args());
     }
 
     /**
@@ -343,32 +362,48 @@ abstract class Repository implements RepositoryInterface
     }
 
     /**
-     * Fetch collection ordered and filtrated by specified columns for specified page.
+     * Fetch collection ordered and filtrated by specified columns for specified page as paginator.
      *
-     * @param int   $page
-     * @param int   $perPage
-     * @param array $filter
-     * @param array $sort
-     * @param array $columns
+     * @param int    $page
+     * @param int    $perPage
+     * @param array  $columns
+     * @param array  $filter
+     * @param array  $sort
+     * @param string $search
      *
      * @return LengthAwarePaginator
      */
-    public function fetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
-    {
+    public function fetch(
+        $page = 1,
+        $perPage = 15,
+        array $columns = ['*'],
+        array $filter = [],
+        array $sort = [],
+        $search = null
+    ) {
         return $this->mediator->transformPaginator($this->mediator(func_get_args()));
     }
 
     /**
-     * @param int   $page
-     * @param int   $perPage
-     * @param array $columns
-     * @param array $filter
-     * @param array $sort
+     * Fetch collection ordered and filtrated by specified columns for specified page.
+     *
+     * @param int    $page
+     * @param int    $perPage
+     * @param array  $columns
+     * @param array  $filter
+     * @param array  $sort
+     * @param string $search
      *
      * @return Collection
      */
-    public function simpleFetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
-    {
+    public function simpleFetch(
+        $page = 1,
+        $perPage = 15,
+        array $columns = ['*'],
+        array $filter = [],
+        array $sort = [],
+        $search = null
+    ) {
         return $this->mediator->transform($this->mediator(func_get_args()));
     }
 

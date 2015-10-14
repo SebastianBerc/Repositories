@@ -3,6 +3,7 @@
 namespace SebastianBerc\Repositories\Services;
 
 use Illuminate\Contracts\Container\Container as Application;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -182,16 +183,20 @@ class DatabaseService implements ServiceInterface
     }
 
     /**
-     * Find a model by its primary key.
+     * Search the models in search of words in a given phrase to the specified columns.
      *
-     * @param array    $identifiers
-     * @param string[] $columns
+     * @param string $search
+     * @param array  $columns
+     * @param float  $threshold
      *
-     * @return Collection
+     * @return Builder
      */
-    public function findMany($identifiers, array $columns = ['*'])
+    public function search($search, array $columns = [], $threshold = null)
     {
-        return $this->repository->makeQuery()->findMany($identifiers, $columns);
+        $searchable = empty($columns) ? $columns : $this->repository->getSearchableFields();
+        $service    = new SearchService($this->repository->makeQuery(), $searchable, $threshold);
+
+        return $service->search($search);
     }
 
     /**
@@ -209,21 +214,31 @@ class DatabaseService implements ServiceInterface
     /**
      * Fetch collection ordered and filtrated by specified columns for specified page as paginator.
      *
-     * @param int   $page
-     * @param int   $perPage
-     * @param array $filter
-     * @param array $sort
-     * @param array $columns
+     * @param int    $page
+     * @param int    $perPage
+     * @param array  $columns
+     * @param array  $filter
+     * @param array  $sort
+     * @param string $search
      *
      * @return LengthAwarePaginator
      */
-    public function fetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
-    {
-        $this->instance = $this->repository->makeQuery();
+    public function fetch(
+        $page = 1,
+        $perPage = 15,
+        array $columns = ['*'],
+        array $filter = [],
+        array $sort = [],
+        $search = null
+    ) {
+        if (empty($search)) {
+            $this->instance = $this->repository->makeQuery();
+            $this->multiFilterBy($filter)->multiSortBy($sort);
+        } else {
+            $this->instance = $this->repository->search($search);
+        }
 
-        $this->multiFilterBy($filter)->multiSortBy($sort);
-
-        $count = $this->instance->count();
+        $count = $this->countResults($this->instance);
         $items = $this->instance->forPage($page, $perPage)->get($columns);
 
         $options = [
@@ -237,20 +252,56 @@ class DatabaseService implements ServiceInterface
     /**
      * Fetch collection ordered and filtrated by specified columns for specified page.
      *
-     * @param int   $page
-     * @param int   $perPage
-     * @param array $columns
-     * @param array $filter
-     * @param array $sort
+     * @param int    $page
+     * @param int    $perPage
+     * @param array  $columns
+     * @param array  $filter
+     * @param array  $sort
+     * @param string $search
      *
      * @return Collection
      */
-    public function simpleFetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
-    {
-        $this->instance = $this->repository->makeQuery();
-
-        $this->multiFilterBy($filter)->multiSortBy($sort);
+    public function simpleFetch(
+        $page = 1,
+        $perPage = 15,
+        array $columns = ['*'],
+        array $filter = [],
+        array $sort = [],
+        $search = null
+    ) {
+        if (is_null($search)) {
+            $this->instance = $this->repository->makeQuery();
+            $this->multiFilterBy($filter)->multiSortBy($sort);
+        } else {
+            $this->instance = $this->repository->search($search);
+        }
 
         return $this->instance->forPage($page, $perPage)->get($columns);
+    }
+
+    /**
+     * Counts results for given query.
+     *
+     * @param Builder $query
+     *
+     * @return int
+     */
+    protected function countResults(Builder $query)
+    {
+        $query->getQuery()->aggregate = ['function' => 'count', 'columns' => $columns = ['*']];
+
+        $previousColumns        = $query->getQuery()->columns;
+        $previousSelectBindings = $query->getQuery()->getBindings();
+
+        $results = $query->getQuery()->get($columns);
+
+        $query->getQuery()->aggregate = null;
+        $query->getQuery()->columns   = $previousColumns;
+
+        $query->getQuery()->setBindings($previousSelectBindings, 'select');
+
+        if (isset($results[0])) {
+            return array_change_key_case((array) $results[0])['aggregate'];
+        }
     }
 }
