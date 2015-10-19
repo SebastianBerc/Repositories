@@ -301,21 +301,12 @@ class DatabaseService implements ServiceInterface
      */
     protected function countResults(Builder $query)
     {
+        $query = clone $query;
+
         $query->getQuery()->aggregate = ['function' => 'count', 'columns' => $columns = ['*']];
-
-        $previousColumns           = $query->getQuery()->columns;
-        $previousSelectBindings    = $query->getQuery()->getBindings();
-        $previousOrders            = $query->getQuery()->orders;
-
-        $query->getQuery()->orders = null;
+        $query->getQuery()->orders    = null;
 
         $results = $query->getQuery()->get($columns);
-
-        $query->getQuery()->aggregate = null;
-        $query->getQuery()->columns   = $previousColumns;
-        $query->getQuery()->orders    = $previousOrders;
-
-        $query->getQuery()->setBindings($previousSelectBindings, 'select');
 
         if (isset($results[0])) {
             return array_change_key_case((array) $results[0])['aggregate'];
