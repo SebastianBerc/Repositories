@@ -49,10 +49,12 @@ trait Sortable
 
         /** @var BelongsTo|HasOne $relationClass */
         $relationClass = $this->repository->makeModel()->$relation();
+        $sortByTable = $relationClass->getParent()->getTable();
 
         switch (get_class($relationClass)) {
             case BelongsTo::class:
-                $this->instance = $this->joinBelongsTo($relationClass);
+                $this->instance = $this->joinBelongsTo($relationClass, $relation);
+                $sortByTable = $relation;
                 break;
             case HasOne::class:
                 $this->instance = $this->joinHasOne($relationClass);
@@ -60,7 +62,7 @@ trait Sortable
         }
 
         $this->instance = $this->instance->select(DB::raw("{$relationClass->getParent()->getTable()}.*"))
-            ->orderBy("{$relationClass->getRelated()->getTable()}.{$column}", $direction);
+            ->orderBy("$sortByTable.{$column}", $direction);
 
         return $this;
     }
@@ -69,14 +71,15 @@ trait Sortable
      * Join a belongs to relationship.
      *
      * @param BelongsTo $relation
+     * @param string    $alias alias of joined table.
      *
      * @return mixed
      */
-    protected function joinBelongsTo(BelongsTo $relation)
+    protected function joinBelongsTo(BelongsTo $relation, $alias)
     {
-        return $this->instance->join(
-            $relation->getRelated()->getTable(),
-            $relation->getQualifiedOtherKeyName(),
+        return $this->instance->leftJoin(
+            $relation->getRelated()->getTable() . " as $alias",
+            "$alias.".$relation->getOtherKey(),
             '=',
             $relation->getQualifiedForeignKey()
         );
