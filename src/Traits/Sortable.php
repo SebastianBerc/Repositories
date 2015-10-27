@@ -49,7 +49,7 @@ trait Sortable
 
         /** @var BelongsTo|HasOne $relationClass */
         $relationClass = $this->repository->makeModel()->$relation();
-        $sortByTable = $relationClass->getParent()->getTable();
+        $sortByTable = $relationClass->getRelated()->getTable();
 
         switch (get_class($relationClass)) {
             case BelongsTo::class:
