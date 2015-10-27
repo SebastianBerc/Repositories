@@ -45,6 +45,8 @@ trait Filterable
     {
         list($relation, $column) = explode('.', $column);
 
+        $relation = camel_case($relation);
+
         $column = $this->repository->makeModel()->$relation()->getModel()->getTable() . '.' . $column;
 
         $this->instance = $this->instance->whereHas(
