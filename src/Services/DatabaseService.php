@@ -12,11 +12,10 @@ use SebastianBerc\Repositories\Traits\Filterable;
 use SebastianBerc\Repositories\Traits\Sortable;
 
 /**
- * Class DatabaseService
+ * Class DatabaseService.
  *
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
- * @package   SebastianBerc\Repositories\Services
  */
 class DatabaseService implements ServiceInterface
 {
@@ -134,7 +133,7 @@ class DatabaseService implements ServiceInterface
      *
      * @param int $identifier
      *
-     * @return boolean|null
+     * @return bool|null
      */
     public function delete($identifier)
     {
@@ -151,7 +150,7 @@ class DatabaseService implements ServiceInterface
      */
     public function find($identifier, array $columns = ['*'])
     {
-        return $this->repository->makeQuery()->find($identifier, $columns);
+        return $this->repository->makeQuery()->findOrFail($identifier, $columns);
     }
 
     /**
@@ -215,7 +214,7 @@ class DatabaseService implements ServiceInterface
 
         $options = [
             'path'  => $this->app->make('request')->url(),
-            'query' => compact('page', 'perPage')
+            'query' => compact('page', 'perPage'),
         ];
 
         return (new LengthAwarePaginator($items, $count, $perPage, $page, $options));

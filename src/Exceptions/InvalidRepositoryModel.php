@@ -3,11 +3,10 @@
 namespace SebastianBerc\Repositories\Exceptions;
 
 /**
- * Class InvalidRepositoryModel
+ * Class InvalidRepositoryModel.
  *
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
- * @package   SebastianBerc\Repositories\Exceptions
  */
 class InvalidRepositoryModel extends \Exception
 {
