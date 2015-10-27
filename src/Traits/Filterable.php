@@ -35,28 +35,57 @@ trait Filterable
     /**
      * Append relation column filter to query builder.
      *
-     * @param string $column
+     * @param array  $column
      * @param string $value
      *
      * @return $this
      */
     public function filterByRelation($column, $value = null)
     {
-        list($relation, $column) = explode('.', $column);
+        $relations = explode('.', $column);
+        $column    = $this->getColumn($column = array_pop($relations), $relations);
 
-        $relation = camel_case($relation);
-
-        $column = $this->repository->makeModel()->$relation()->getModel()->getTable() . '.' . $column;
-        $like   = $this->repository->makeModel()->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
-
-        $this->instance = $this->instance->whereHas(
-            $relation,
-            function (Builder $builder) use ($column, $value, $like) {
-                $builder->where($column, $like, "%$value%");
-            }
-        );
+        $this->instance->whereHas(implode('.', $relations), function (Builder $builder) use ($column, $value) {
+            $builder->where($column, $this->getLikeOperator(), "%$value%");
+        });
 
         return $this;
+    }
+
+    /**
+     * Returns column name prefixed with table name.
+     *
+     * @param string $column
+     * @param array  $relations
+     *
+     * @return string
+     */
+    protected function getColumn($column, array $relations = [])
+    {
+        /** @var \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Relations\Relation $model */
+        $model = $this->repository->makeModel();
+
+        if (empty($relations)) {
+            return "{$model->getTable()}.{$column}";
+        }
+
+        foreach ($relations as $relation) {
+            $model = $model instanceof \Illuminate\Database\Eloquent\Model
+                ? $model->{camel_case($relation)}()
+                : $model->getRelated()->{camel_case($relation)}();
+        }
+
+        return "{$model->getRelated()->getTable()}.{$column}";
+    }
+
+    /**
+     * Returns ilike for pgsql instead of like.
+     *
+     * @return string
+     */
+    protected function getLikeOperator()
+    {
+        return $this->repository->makeModel()->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
     }
 
     /**
@@ -69,10 +98,7 @@ trait Filterable
      */
     public function filterBy($column, $value = null)
     {
-        $column = $this->repository->makeModel()->getTable() . '.' . $column;
-        $like   = $this->repository->makeModel()->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
-
-        $this->instance = $this->instance->where($column, $like, "%$value%");
+        $this->instance->where($column, $this->getLikeOperator(), "%$value%");
 
         return $this;
     }

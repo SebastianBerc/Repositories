@@ -150,7 +150,7 @@ class DatabaseService implements ServiceInterface
      */
     public function find($identifier, array $columns = ['*'])
     {
-        return $this->repository->makeQuery()->find($identifier, $columns);
+        return $this->repository->makeQuery()->findOrFail($identifier, $columns);
     }
 
     /**
