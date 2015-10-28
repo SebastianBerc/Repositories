@@ -77,7 +77,7 @@ class DatabaseService implements ServiceInterface
      * @param string       $boolean
      * @param string[]     $columns
      *
-     * @return mixed
+     * @return Collection
      */
     public function where($column, $operator = '=', $value = null, $boolean = 'and', array $columns = ['*'])
     {

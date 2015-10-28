@@ -246,7 +246,7 @@ abstract class Repository implements RepositoryInterface
      * @param string       $boolean
      * @param string[]     $columns
      *
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
     public function where($column, $operator = '=', $value = null, $boolean = 'and', array $columns = ['*'])
     {
