@@ -48,11 +48,12 @@ trait Filterable
         $relation = camel_case($relation);
 
         $column = $this->repository->makeModel()->$relation()->getModel()->getTable() . '.' . $column;
+        $like   = $this->repository->makeModel()->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
 
         $this->instance = $this->instance->whereHas(
             $relation,
-            function (Builder $builder) use ($column, $value) {
-                $builder->where($column, "like", "%$value%");
+            function (Builder $builder) use ($column, $value, $like) {
+                $builder->where($column, $like, "%$value%");
             }
         );
 
@@ -70,8 +71,9 @@ trait Filterable
     public function filterBy($column, $value = null)
     {
         $column = $this->repository->makeModel()->getTable() . '.' . $column;
+        $like   = $this->repository->makeModel()->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
 
-        $this->instance = $this->instance->where($column, 'like', "%$value%");
+        $this->instance = $this->instance->where($column, $like, "%$value%");
 
         return $this;
     }
