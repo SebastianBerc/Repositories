@@ -7,11 +7,10 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
- * Interface RepositoryInterface
+ * Interface RepositoryInterface.
  *
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
- * @package   SebastianBerc\Repositories\Contracts
  */
 interface RepositoryInterface
 {
