@@ -5,11 +5,10 @@ namespace SebastianBerc\Repositories\Traits;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Class Filterable
+ * Class Filterable.
  *
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
- * @package   SebastianBerc\Repositories\Traits
  */
 trait Filterable
 {
@@ -52,7 +51,7 @@ trait Filterable
         $this->instance = $this->instance->whereHas(
             $relation,
             function (Builder $builder) use ($column, $value) {
-                $builder->where($column, "like", "%$value%");
+                $builder->where($column, 'like', "%$value%");
             }
         );
 
