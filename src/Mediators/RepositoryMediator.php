@@ -12,11 +12,10 @@ use SebastianBerc\Repositories\Services\DatabaseService;
 use SebastianBerc\Repositories\Services\TransformService;
 
 /**
- * Class RepositoryMediator
+ * Class RepositoryMediator.
  *
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
- * @package   SebastianBerc\Repositories\Mediators
  */
 class RepositoryMediator
 {

@@ -10,11 +10,10 @@ use SebastianBerc\Repositories\Contracts\ServiceInterface;
 use SebastianBerc\Repositories\Repository;
 
 /**
- * Class CriteriaService
+ * Class CriteriaService.
  *
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
- * @package   SebastianBerc\Repositories\Services
  */
 class CriteriaService implements ServiceInterface
 {
