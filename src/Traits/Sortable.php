@@ -47,6 +47,8 @@ trait Sortable
     {
         list($relation, $column) = explode('.', $column);
 
+        $relation = camel_case($relation);
+
         /** @var BelongsTo|HasOne $relationClass */
         $relationClass = $this->repository->makeModel()->$relation();
 
