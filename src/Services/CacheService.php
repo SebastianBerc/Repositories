@@ -9,11 +9,10 @@ use SebastianBerc\Repositories\Contracts\ServiceInterface;
 use SebastianBerc\Repositories\Repository;
 
 /**
- * Class CacheService
+ * Class CacheService.
  *
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
- * @package   SebastianBerc\Repositories\Services
  */
 class CacheService implements ServiceInterface
 {
