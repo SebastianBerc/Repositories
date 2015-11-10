@@ -10,11 +10,10 @@ use SebastianBerc\Repositories\Exceptions\InvalidTransformer;
 use SebastianBerc\Repositories\Repository;
 
 /**
- * Class TransformService
+ * Class TransformService.
  *
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
- * @package   SebastianBerc\Repositories\Services
  */
 class TransformService implements ServiceInterface
 {
@@ -49,8 +48,9 @@ class TransformService implements ServiceInterface
      *
      * @param Collection $collection
      *
-     * @return Collection
      * @throws InvalidTransformer
+     *
+     * @return Collection
      */
     public function executeOn(Collection $collection)
     {

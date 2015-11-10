@@ -6,11 +6,10 @@ use Illuminate\Support\Collection;
 use SebastianBerc\Repositories\Contracts\TransformerInterface;
 
 /**
- * Class Transformer
+ * Class Transformer.
  *
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
- * @package   SebastianBerc\Repositories
  */
 abstract class Transformer implements TransformerInterface
 {
