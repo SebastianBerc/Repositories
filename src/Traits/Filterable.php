@@ -5,11 +5,10 @@ namespace SebastianBerc\Repositories\Traits;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Class Filterable
+ * Class Filterable.
  *
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
- * @package   SebastianBerc\Repositories\Traits
  */
 trait Filterable
 {
@@ -45,12 +44,15 @@ trait Filterable
     {
         list($relation, $column) = explode('.', $column);
 
+        $relation = camel_case($relation);
+
         $column = $this->repository->makeModel()->$relation()->getModel()->getTable() . '.' . $column;
+        $like   = $this->repository->makeModel()->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
 
         $this->instance = $this->instance->whereHas(
             $relation,
-            function (Builder $builder) use ($column, $value) {
-                $builder->where($column, "like", "%$value%");
+            function (Builder $builder) use ($column, $value, $like) {
+                $builder->where($column, $like, "%$value%");
             }
         );
 
@@ -68,8 +70,9 @@ trait Filterable
     public function filterBy($column, $value = null)
     {
         $column = $this->repository->makeModel()->getTable() . '.' . $column;
+        $like   = $this->repository->makeModel()->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
 
-        $this->instance = $this->instance->where($column, 'like', "%$value%");
+        $this->instance = $this->instance->where($column, $like, "%$value%");
 
         return $this;
     }

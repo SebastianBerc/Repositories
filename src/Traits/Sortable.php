@@ -7,11 +7,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
- * Class Sortable
+ * Class Sortable.
  *
  * @author    Sebastian Berć <sebastian.berc@gmail.com>
  * @copyright Copyright (c) Sebastian Berć
- * @package   SebastianBerc\Repositories\Traits
  */
 trait Sortable
 {
@@ -46,6 +45,8 @@ trait Sortable
     public function sortByRelation($column, $direction = 'ASC')
     {
         list($relation, $column) = explode('.', $column);
+
+        $relation = camel_case($relation);
 
         /** @var BelongsTo|HasOne $relationClass */
         $relationClass = $this->repository->makeModel()->$relation();
