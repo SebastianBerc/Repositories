@@ -13,10 +13,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
- * Class SearchService
+ * Class SearchService.
  *
  * @author  Sebastian Berć <sebastian.berc@gmail.com>
- * @package SebastianBerc\Repositories\Services
  */
 class SearchService
 {
@@ -487,7 +486,7 @@ class SearchService
      */
     protected function getCaseCompare($column, $compare, $relevance)
     {
-        $field = "LOWER(`" . str_replace('.', '`.`', $column) . "`) " . $compare . " ?";
+        $field = 'LOWER(`' . str_replace('.', '`.`', $column) . '`) ' . $compare . ' ?';
 
         return '(case when ' . $field . ' then ' . $relevance . ' else 0 end)';
     }
@@ -502,7 +501,7 @@ class SearchService
     private function setSearchableColumns(array $searchable)
     {
         if (empty($searchable)) {
-            $relevance  = array_fill(0, sizeof($columns = $this->getColumnsFromSchema()), 1);
+            $relevance  = array_fill(0, count($columns = $this->getColumnsFromSchema()), 1);
             $searchable = array_combine($columns, $relevance);
         }
 

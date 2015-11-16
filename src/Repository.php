@@ -248,7 +248,7 @@ abstract class Repository implements RepositoryInterface
      * @param string       $boolean
      * @param string[]     $columns
      *
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
     public function where($column, $operator = '=', $value = null, $boolean = 'and', array $columns = ['*'])
     {
@@ -318,7 +318,7 @@ abstract class Repository implements RepositoryInterface
         $collection = $this->mediator->transform($this->mediator(func_get_args()));
 
         if ($collection->isEmpty()) {
-            return null;
+            return;
         }
 
         return $collection->count() === 1 ? $collection->first() : $collection;
