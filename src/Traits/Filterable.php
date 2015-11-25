@@ -49,10 +49,14 @@ trait Filterable
         $column = $this->repository->makeModel()->$relation()->getModel()->getTable() . '.' . $column;
         $like   = $this->repository->makeModel()->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
 
-        $this->instance = $this->instance->whereHas(
+        $this->instance->whereHas(
             $relation,
             function (Builder $builder) use ($column, $value, $like) {
-                $builder->where($column, $like, "%$value%");
+                if (in_array($value, ['true', 'false'])) {
+                    $builder->where($column, $value === 'false' ? false : true);
+                } else {
+                    $builder->where($column, $like, "%$value%");
+                }
             }
         );
 
@@ -72,7 +76,11 @@ trait Filterable
         $column = $this->repository->makeModel()->getTable() . '.' . $column;
         $like   = $this->repository->makeModel()->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
 
-        $this->instance = $this->instance->where($column, $like, "%$value%");
+        if (in_array($value, ['true', 'false'])) {
+            $this->instance->where($column, $value === 'false' ? false : true);
+        } else {
+            $this->instance->where($column, $like, "%$value%");
+        }
 
         return $this;
     }
