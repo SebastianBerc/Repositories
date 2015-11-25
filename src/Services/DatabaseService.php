@@ -117,7 +117,9 @@ class DatabaseService implements ServiceInterface
      */
     public function update($identifier, array $attributes = [])
     {
-        $instance = ($identifier instanceof Eloquent ? $identifier : $this->find($identifier));
+        $instance = ($identifier instanceof Eloquent)
+            ? $identifier
+            : $this->repository->makeQuery()->findOrFail($identifier);
 
         $instance->fill($attributes);
 
@@ -150,7 +152,7 @@ class DatabaseService implements ServiceInterface
      */
     public function find($identifier, array $columns = ['*'])
     {
-        return $this->repository->makeQuery()->findOrFail($identifier, $columns);
+        return $this->repository->makeQuery()->find($identifier, $columns);
     }
 
     /**
