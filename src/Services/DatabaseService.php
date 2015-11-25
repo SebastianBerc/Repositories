@@ -118,7 +118,9 @@ class DatabaseService implements ServiceInterface
      */
     public function update($identifier, array $attributes = [])
     {
-        $instance = ($identifier instanceof Eloquent ? $identifier : $this->find($identifier));
+        $instance = $identifier instanceof Eloquent
+            ? $identifier
+            : $this->repository->makeQuery()->findOrFail($identifier);
 
         $instance->fill($attributes);
 
@@ -138,7 +140,9 @@ class DatabaseService implements ServiceInterface
      */
     public function delete($identifier)
     {
-        return $this->find($identifier, [$this->repository->makeModel()->getKeyName()])->delete();
+        return $this->repository->makeQuery()
+            ->findOrFail($identifier, [$this->repository->makeModel()->getKeyName()])
+            ->delete();
     }
 
     /**
