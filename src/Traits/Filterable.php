@@ -45,9 +45,21 @@ trait Filterable
         $relations = explode('.', $column);
         $column    = $this->getColumn($column = array_pop($relations), $relations);
 
-        $this->instance->whereHas(implode('.', $relations), function (Builder $builder) use ($column, $value) {
-            $builder->where($column, $this->getLikeOperator(), "%$value%");
-        });
+        $relation = camel_case($relation);
+
+        $column = $this->repository->makeModel()->$relation()->getModel()->getTable() . '.' . $column;
+        $like   = $this->repository->makeModel()->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
+        $this->instance->whereHas(
+            $relation,
+            function (Builder $builder) use ($column, $value, $like) {
+                if (in_array($value, ['true', 'false'])) {
+                    $builder->where($column, $value === 'false' ? false : true);
+                } else {
+                    $builder->where($column, $like, "%$value%");
+                }
+            }
+        );
 
         return $this;
     }
@@ -98,7 +110,14 @@ trait Filterable
      */
     public function filterBy($column, $value = null)
     {
-        $this->instance->where($column, $this->getLikeOperator(), "%$value%");
+        $column = $this->repository->makeModel()->getTable() . '.' . $column;
+        $like   = $this->repository->makeModel()->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
+        if (in_array($value, ['true', 'false'])) {
+            $this->instance->where($column, $value === 'false' ? false : true);
+        } else {
+            $this->instance->where($column, $like, "%$value%");
+        }
 
         return $this;
     }
