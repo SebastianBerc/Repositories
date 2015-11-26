@@ -365,8 +365,7 @@ class DatabaseService implements ServiceInterface
 
         foreach ($query->getQuery()->columns as $column) {
             if (preg_match("~AS (\w+)~i", $column, $matches)) {
-                $aliases[$query->getModel()->getTable() . '.' . $matches[1]]
-                    = \DB::raw(str_replace($matches[0], '', $column));
+                $aliases[$matches[1]] = \DB::raw(str_replace($matches[0], '', $column));
             }
         }
 
