@@ -210,9 +210,11 @@ class DatabaseService implements ServiceInterface
      */
     public function fetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
     {
-        $this->instance = $this->parseAliases($this->repository->makeQuery());
+        $this->instance = $this->repository->makeQuery();
 
         $this->multiFilterBy($filter)->multiSortBy($sort);
+
+        $this->parseAliases($this->instance);
 
         $count = $this->instance->count();
         $items = $this->instance->forPage($page, $perPage)->get($columns);
@@ -238,9 +240,9 @@ class DatabaseService implements ServiceInterface
      */
     public function simpleFetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
     {
-        $this->instance = $this->parseAliases($this->repository->makeQuery());
+        $this->instance = $this->repository->makeQuery();
 
-        $this->multiFilterBy($filter)->multiSortBy($sort);
+        $this->multiFilterBy($filter)->multiSortBy($sort)->parseAliases($this->instance);
 
         return $this->instance->forPage($page, $perPage)->get($columns);
     }
@@ -270,7 +272,7 @@ class DatabaseService implements ServiceInterface
             $aliases = $this->getAliases($query);
         }
 
-        if (!empty($aliases) & !empty($query->getQuery()->wheres)) {
+        if (!empty($aliases) && !empty($query->getQuery()->wheres)) {
             $this->replaceAliases($query, $aliases);
         }
 
