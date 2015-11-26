@@ -248,11 +248,13 @@ class DatabaseService implements ServiceInterface
         $search = null
     ) {
         if (empty($search)) {
-            $this->instance = $this->parseAliases($this->repository->makeQuery());
+            $this->instance = $this->repository->makeQuery();
             $this->multiFilterBy($filter)->multiSortBy($sort);
         } else {
             $this->instance = $this->repository->search($search);
         }
+
+        $this->parseAliases($this->instance);
 
         $count = $this->countResults($this->instance);
         $items = $this->instance->forPage($page, $perPage)->get($columns);
@@ -286,13 +288,36 @@ class DatabaseService implements ServiceInterface
         $search = null
     ) {
         if (is_null($search)) {
-            $this->instance = $this->parseAliases($this->repository->makeQuery());
+            $this->instance = $this->repository->makeQuery();
             $this->multiFilterBy($filter)->multiSortBy($sort);
         } else {
             $this->instance = $this->repository->search($search);
         }
 
+        $this->parseAliases($this->instance);
+
         return $this->instance->forPage($page, $perPage)->get($columns);
+    }
+
+    /**
+     * Counts results for given query.
+     *
+     * @param Builder $query
+     *
+     * @return int
+     */
+    protected function countResults(Builder $query)
+    {
+        $query = clone $query;
+
+        $query->getQuery()->aggregate = ['function' => 'count', 'columns' => $columns = ['*']];
+        $query->getQuery()->orders    = null;
+
+        $results = $query->getQuery()->get($columns);
+
+        if (isset($results[0])) {
+            return array_change_key_case((array) $results[0])['aggregate'];
+        }
     }
 
     /**
@@ -320,32 +345,11 @@ class DatabaseService implements ServiceInterface
             $aliases = $this->getAliases($query);
         }
 
-        if (!empty($aliases) & !empty($query->getQuery()->wheres)) {
+        if (!empty($aliases) && !empty($query->getQuery()->wheres)) {
             $this->replaceAliases($query, $aliases);
         }
 
         return $query;
-    }
-
-    /**
-     * Counts results for given query.
-     *
-     * @param Builder $query
-     *
-     * @return int
-     */
-    protected function countResults(Builder $query)
-    {
-        $query = clone $query;
-
-        $query->getQuery()->aggregate = ['function' => 'count', 'columns' => $columns = ['*']];
-        $query->getQuery()->orders    = null;
-
-        $results = $query->getQuery()->get($columns);
-
-        if (isset($results[0])) {
-            return array_change_key_case((array) $results[0])['aggregate'];
-        }
     }
 
     /**

@@ -48,9 +48,11 @@ trait Filterable
         $column    = $this->getColumn($column = array_pop($relations), $relations);
 
         $this->instance->whereHas(implode('.', $relations), function (Builder $builder) use ($column, $value) {
-            $value = in_array($value, ['true', 'false']) ? $value === 'false' ? false : true : $value;
+            $value = in_array($value, ['true', 'false']) ? ($value === 'false' ? false : true) : $value;
 
-            $builder->where($column, $this->getLikeOperator(), "%$value%");
+            is_bool($value)
+                ? $builder->where($column, $value)
+                : $builder->where($column, $this->getLikeOperator(), "%$value%");
         });
 
         return $this;
@@ -102,9 +104,11 @@ trait Filterable
      */
     public function filterBy($column, $value = null)
     {
-        $value = in_array($value, ['true', 'false']) ? $value === 'false' ? false : true : $value;
+        $value = in_array($value, ['true', 'false']) ? ($value === 'false' ? false : true) : $value;
 
-        $this->instance->where($column, $this->getLikeOperator(), "%$value%");
+        is_bool($value)
+            ? $this->instance->where($column, $value)
+            : $this->instance->where($column, $this->getLikeOperator(), "%$value%");
 
         return $this;
     }
