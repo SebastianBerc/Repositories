@@ -47,6 +47,10 @@ trait Filterable
         $relations = explode('.', $column);
         $column    = $this->getColumn($column = array_pop($relations), $relations);
 
+        $relations = array_map(function ($relation) {
+            return camel_case($relation);
+        }, $relations);
+
         $this->instance->whereHas(implode('.', $relations), function (Builder $builder) use ($column, $value) {
             $value = in_array($value, ['true', 'false']) ? ($value === 'false' ? false : true) : $value;
 
