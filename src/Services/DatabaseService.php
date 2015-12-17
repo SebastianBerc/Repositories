@@ -224,7 +224,7 @@ class DatabaseService implements ServiceInterface
             'query' => compact('page', 'perPage'),
         ];
 
-        return (new LengthAwarePaginator($items, $count, $perPage, $page, $options));
+        return new LengthAwarePaginator($items, $count, $perPage, $page, $options);
     }
 
     /**
