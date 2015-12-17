@@ -4,7 +4,6 @@ namespace SebastianBerc\Repositories\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * Class Filterable.
@@ -72,7 +71,7 @@ trait Filterable
      */
     protected function getColumn($column, array $relations = [])
     {
-        /** @var Model|Relation $model */
+        /** @var \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Relations\Relation $model */
         $model = $this->repository->makeModel();
 
         if (empty($relations)) {
