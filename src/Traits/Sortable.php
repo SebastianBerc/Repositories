@@ -63,10 +63,13 @@ trait Sortable
             $model = $relationClass->getRelated();
         }
 
-        foreach ($this->instance->getQuery()->columns as $key => $value) {
-            if ($value === '*') {
-                $this->instance->getQuery()->columns[$key] = DB::raw("{$this->repository->makeModel()->getTable()}.*");
-            }
+        $selectedColumns = $this->instance->getQuery()->columns;
+        $addColumn = DB::raw("{$this->repository->makeModel()->getTable()}.*");
+
+        if (is_array($selectedColumns) && array_search('*', $selectedColumns, true) !== null) {
+            $this->instance->getQuery()->columns[array_search('*', $selectedColumns, true)] = $addColumn;
+        } else {
+            $this->instance->select($addColumn);
         }
 
         $this->instance->orderBy("{$model->getTable()}.{$column}", $direction);
