@@ -118,7 +118,9 @@ class DatabaseService implements ServiceInterface
      */
     public function update($identifier, array $attributes = [])
     {
-        $instance = ($identifier instanceof Eloquent ? $identifier : $this->find($identifier));
+        $instance = $identifier instanceof Eloquent
+            ? $identifier
+            : $this->repository->makeQuery()->findOrFail($identifier);
 
         $instance->fill($attributes);
 
@@ -138,7 +140,9 @@ class DatabaseService implements ServiceInterface
      */
     public function delete($identifier)
     {
-        return $this->find($identifier, [$this->repository->makeModel()->getKeyName()])->delete();
+        return $this->repository->makeQuery()
+            ->findOrFail($identifier, [$this->repository->makeModel()->getKeyName()])
+            ->delete();
     }
 
     /**
@@ -250,6 +254,8 @@ class DatabaseService implements ServiceInterface
             $this->instance = $this->repository->search($search);
         }
 
+        $this->parseAliases($this->instance);
+
         $count = $this->countResults($this->instance);
         $items = $this->instance->forPage($page, $perPage)->get($columns);
 
@@ -258,7 +264,7 @@ class DatabaseService implements ServiceInterface
             'query' => compact('page', 'perPage'),
         ];
 
-        return (new LengthAwarePaginator($items, $count, $perPage, $page, $options));
+        return new LengthAwarePaginator($items, $count, $perPage, $page, $options);
     }
 
     /**
@@ -288,6 +294,8 @@ class DatabaseService implements ServiceInterface
             $this->instance = $this->repository->search($search);
         }
 
+        $this->parseAliases($this->instance);
+
         return $this->instance->forPage($page, $perPage)->get($columns);
     }
 
@@ -309,6 +317,75 @@ class DatabaseService implements ServiceInterface
 
         if (isset($results[0])) {
             return array_change_key_case((array) $results[0])['aggregate'];
+        }
+    }
+
+    /**
+     * Replace alias name in where closure with sub-queries from select.
+     *
+     * Example:
+     *
+     * SELECT table.*, (SELECT 1 FROM other_table ot WHERE ot.id = table.id) AS exists
+     * WHERE exists = 1;
+     *
+     * Will be converted to:
+     *
+     * SELECT table.*, (SELECT 1 FROM other_table ot WHERE ot.id = table.id) AS exists
+     * WHERE (SELECT 1 FROM other_table ot WHERE ot.id = table.id) = 1;
+     *
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    protected function parseAliases(Builder $query)
+    {
+        $aliases = [];
+
+        if (!empty($query->getQuery()->columns)) {
+            $aliases = $this->getAliases($query);
+        }
+
+        if (!empty($aliases) && !empty($query->getQuery()->wheres)) {
+            $this->replaceAliases($query, $aliases);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Get sub queries and aliases from select statement.
+     *
+     * @param Builder $query
+     *
+     * @return array
+     */
+    protected function getAliases(Builder $query)
+    {
+        $aliases = [];
+
+        foreach ($query->getQuery()->columns as $column) {
+            if (preg_match("~AS (\w+)~i", $column, $matches)) {
+                $aliases[$matches[1]] = \DB::raw(str_replace($matches[0], '', $column));
+            }
+        }
+
+        return $aliases;
+    }
+
+    /**
+     * Replace aliases in where statement with sub queries.
+     *
+     * @param Builder $query
+     * @param array   $aliases
+     *
+     * @return void
+     */
+    protected function replaceAliases(Builder $query, $aliases)
+    {
+        foreach ($query->getQuery()->wheres as $key => $value) {
+            if (in_array($value['column'], array_keys($aliases))) {
+                $query->getQuery()->wheres[$key]['column'] = $aliases[$value['column']];
+            }
         }
     }
 }

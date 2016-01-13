@@ -4,7 +4,11 @@ namespace SebastianBerc\Repositories\Traits;
 
 use DB;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * Class Sortable.
@@ -37,33 +41,85 @@ trait Sortable
     /**
      * Append relation column sorting to query builder.
      *
-     * @param string|array $column
-     * @param string       $direction
+     * @param array  $column
+     * @param string $direction
      *
      * @return $this
      */
     public function sortByRelation($column, $direction = 'ASC')
     {
-        list($relation, $column) = explode('.', $column);
+        $relations = explode('.', $column);
+        $column    = array_pop($relations);
 
-        $relation = camel_case($relation);
+        /** @var \Illuminate\Database\Eloquent\Model $model */
+        $model = $this->repository->makeModel();
 
-        /** @var BelongsTo|HasOne $relationClass */
-        $relationClass = $this->repository->makeModel()->$relation();
+        $this->instance->getQuery()->orders = [];
 
-        switch (get_class($relationClass)) {
-            case BelongsTo::class:
-                $this->instance = $this->joinBelongsTo($relationClass);
-                break;
-            case HasOne::class:
-                $this->instance = $this->joinHasOne($relationClass);
-                break;
+        foreach ($relations as $relation) {
+            /* @var Relation $relationClass */
+            $this->joinRelation($relationClass = $model->{camel_case($relation)}());
+
+            $model = $relationClass->getRelated();
         }
 
-        $this->instance = $this->instance->select(DB::raw("{$relationClass->getParent()->getTable()}.*"))
-            ->orderBy("{$relationClass->getRelated()->getTable()}.{$column}", $direction);
+        foreach ($this->instance->getQuery()->columns as $key => $value) {
+            if ($value === '*') {
+                $this->instance->getQuery()->columns[$key] = DB::raw("{$this->repository->makeModel()->getTable()}.*");
+            }
+        }
+
+        $this->instance->orderBy("{$model->getTable()}.{$column}", $direction);
 
         return $this;
+    }
+
+    /**
+     * Add joining the tables to query based on the type of relationship.
+     *
+     * @param Relation $relationClass
+     *
+     * @return $this
+     */
+    protected function joinRelation(Relation $relationClass)
+    {
+        switch (get_class($relationClass)) {
+            case BelongsToMany::class:
+                /* @var BelongsToMany $relationClass */
+                $this->joinBelongsToMany($relationClass);
+                break;
+            case BelongsTo::class:
+                /* @var BelongsTo $relationClass */
+                $this->joinBelongsTo($relationClass);
+                break;
+            case HasOne::class:
+            case HasMany::class:
+                /* @var HasOneOrMany $relationClass */
+                $this->joinHasOneOrMany($relationClass);
+                break;
+        }
+    }
+
+    /**
+     * Join a belongs to many relationship.
+     *
+     * @param BelongsToMany $relation
+     *
+     * @return mixed
+     */
+    protected function joinBelongsToMany(BelongsToMany $relation)
+    {
+        return $this->instance->join(
+            $relation->getTable(),
+            $relation->getParent()->getTable() . '.' . $relation->getParent()->getKeyName(),
+            '=',
+            $relation->getForeignKey()
+        )->join(
+            $relation->getRelated()->getTable(),
+            $relation->getRelated()->getTable() . '.' . $relation->getRelated()->getKeyName(),
+            '=',
+            $relation->getOtherKey()
+        );
     }
 
     /**
@@ -86,11 +142,11 @@ trait Sortable
     /**
      * Join a has one relationship.
      *
-     * @param HasOne $relation
+     * @param HasOneOrMany $relation
      *
      * @return mixed
      */
-    protected function joinHasOne(HasOne $relation)
+    protected function joinHasOneOrMany(HasOneOrMany $relation)
     {
         return $this->instance->join(
             $relation->getRelated()->getTable(),
@@ -110,7 +166,7 @@ trait Sortable
      */
     public function sortBy($column, $direction = 'ASC')
     {
-        $this->instance = $this->instance->orderBy($column, $direction);
+        $this->instance->orderBy($column, $direction);
 
         return $this;
     }
