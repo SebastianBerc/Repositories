@@ -64,6 +64,7 @@ trait Sortable
         }
 
         $selectedColumns = $this->instance->getQuery()->columns;
+
         $addColumn = DB::raw("{$this->repository->makeModel()->getTable()}.*");
 
         if (is_array($selectedColumns) && array_search('*', $selectedColumns, true) !== null) {
