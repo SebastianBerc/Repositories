@@ -63,8 +63,13 @@ trait Sortable
             $model = $relationClass->getRelated();
         }
 
-        $this->instance->select(DB::raw("{$this->repository->makeModel()->getTable()}.*"))
-            ->orderBy("{$model->getTable()}.{$column}", $direction);
+        foreach ($this->instance->getQuery()->columns as $key => $value) {
+            if ($value === '*') {
+                $this->instance->getQuery()->columns[$key] = DB::raw("{$this->repository->makeModel()->getTable()}.*");
+            }
+        }
+
+        $this->instance->orderBy("{$model->getTable()}.{$column}", $direction);
 
         return $this;
     }
