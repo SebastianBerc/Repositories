@@ -51,11 +51,15 @@ trait Filterable
         }, $relations);
 
         $this->instance->whereHas(implode('.', $relations), function (Builder $builder) use ($column, $value) {
-            $value = in_array($value, ['true', 'false']) ? ($value === 'false' ? false : true) : $value;
+            $value = in_array($value, ['true', 'false'], true)
+                ? ($value === 'false' ? false : true)
+                : str_replace('*', '%', $value);
 
-            is_bool($value)
-                ? $builder->where($column, $value)
-                : $builder->where($column, $this->getLikeOperator(), "%$value%");
+            $builder->where(
+                $column,
+                strpos($value, '%') !== false ? $this->getLikeOperator() : $this->getEqualOperator(),
+                $value
+            );
         });
 
         return $this;
@@ -98,6 +102,16 @@ trait Filterable
     }
 
     /**
+     * Returns equal operator.
+     *
+     * @return string
+     */
+    protected function getEqualOperator()
+    {
+        return '=';
+    }
+
+    /**
      * Append column filter to query builder.
      *
      * @param string|array $column
@@ -107,11 +121,15 @@ trait Filterable
      */
     public function filterBy($column, $value = null)
     {
-        $value = in_array($value, ['true', 'false']) ? ($value === 'false' ? false : true) : $value;
-
-        is_bool($value)
-            ? $this->instance->where($column, $value)
-            : $this->instance->where($column, $this->getLikeOperator(), "%$value%");
+        $value = in_array($value, ['true', 'false'], true)
+            ? ($value === 'false' ? false : true)
+            : str_replace('*', '%', $value);
+        
+        $this->instance->where(
+            $column,
+            strpos($value, '%') !== false ? $this->getLikeOperator() : $this->getEqualOperator(),
+            $value
+        );
 
         return $this;
     }
