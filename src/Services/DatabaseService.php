@@ -383,7 +383,7 @@ class DatabaseService implements ServiceInterface
     protected function replaceAliases(Builder $query, $aliases)
     {
         foreach ($query->getQuery()->wheres as $key => $value) {
-            if (in_array($value['column'], array_keys($aliases))) {
+            if (array_key_exists('column', $value) && in_array($value['column'], array_keys($aliases), true)) {
                 $query->getQuery()->wheres[$key]['column'] = $aliases[$value['column']];
             }
         }
