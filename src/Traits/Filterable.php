@@ -44,7 +44,7 @@ trait Filterable
     public function filterByRelation($column, $value = null)
     {
         $relations = explode('.', $column);
-        $column    = $this->getColumn($column = array_pop($relations), $relations);
+        $column = $this->getColumn($column = array_pop($relations), $relations);
 
         $relations = array_map(function ($relation) {
             return camel_case($relation);
@@ -124,7 +124,7 @@ trait Filterable
         $value = in_array($value, ['true', 'false'], true)
             ? ($value === 'false' ? false : true)
             : str_replace('*', '%', $value);
-        
+
         $this->instance->where(
             $column,
             strpos($value, '%') !== false ? $this->getLikeOperator() : $this->getEqualOperator(),
