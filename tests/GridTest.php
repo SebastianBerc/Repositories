@@ -95,7 +95,7 @@ class GridTest extends TestCase
         $this->factory()->times(20)->create(User::class);
         $this->factory()->times(5)->create(User::class, ['password' => 'notSecret']);
 
-        $paginator = $this->repository->fetch(1, 5, ['*'], ['password' => 'not']);
+        $paginator = $this->repository->fetch(1, 5, ['*'], ['password' => 'not*']);
 
         $this->assertInstanceOf(LengthAwarePaginator::class, $paginator);
         $this->assertEquals(5, sizeof($paginator->items()));
