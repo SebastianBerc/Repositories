@@ -44,7 +44,7 @@ trait Filterable
     public function filterByRelation($column, $value = null)
     {
         $relations = explode('.', $column);
-        $column = $this->getColumn($column = array_pop($relations), $relations);
+        $column    = $this->getColumn($column = array_pop($relations), $relations);
 
         $relations = array_map(function ($relation) {
             return camel_case($relation);
