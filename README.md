@@ -15,7 +15,9 @@ Via Composer
 ``` bash
 $ composer require sebastian-berc/repositories
 ```
-
+``` bash
+$ composer require coliving-talk/repositories
+```
 ## Usage
 
 Make your own repository with extends the abstract `\SebastianBerc\Repositories\Repository` class and implement `takeModel` method:
@@ -40,7 +42,7 @@ class MyRepository extends \SebastianBerc\Repositories\Repository
 Wherever Laravel provides dependency injection you can attach your repository like this:
 
 ``` php
-class UsersController extends Controller 
+class UsersController extends Controller
 {
     /**
      * Contains users repository.
@@ -72,7 +74,7 @@ If you need a repository without dependency injection you can use the static met
     public function store(Request $request)
     {
         $repository = UsersRepository::instance();
-        
+
         return $repository->create($request->all());
     }
 ```
@@ -212,7 +214,7 @@ $repository->simpleFetch(1, 15, ['*'], ['activated' => true, 'banned' => 'false'
 
 If your model has a relationship and you want to load it, you can do this with query results by calling the `with` method, for example:
 
-``` php 
+``` php
 // Definition:
 $repository->with($relations);
 // Examples:
