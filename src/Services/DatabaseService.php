@@ -76,7 +76,7 @@ class DatabaseService implements ServiceInterface
      * @param string       $boolean
      * @param string[]     $columns
      *
-     * @return mixed
+     * @return Collection
      */
     public function where($column, $operator = '=', $value = null, $boolean = 'and', array $columns = ['*'])
     {
@@ -186,6 +186,36 @@ class DatabaseService implements ServiceInterface
     }
 
     /**
+     * Find a models by its primary key.
+     *
+     * @param array    $identifiers
+     * @param string[] $columns
+     *
+     * @return Collection
+     */
+    public function findMany($identifiers, array $columns = ['*'])
+    {
+        return $this->repository->makeQuery()->findMany($identifiers, $columns);
+    }
+
+    /**
+     * Search the models in search of words in a given phrase to the specified columns.
+     *
+     * @param string $search
+     * @param array  $columns
+     * @param float  $threshold
+     *
+     * @return Builder
+     */
+    public function search($search, array $columns = [], $threshold = null)
+    {
+        $searchable = empty($columns) ? $columns : $this->repository->getSearchableFields();
+        $service    = new SearchService($this->repository->makeQuery(), $searchable, $threshold);
+
+        return $service->search($search);
+    }
+
+    /**
      * Returns total count of whole collection.
      *
      * @return int
@@ -200,23 +230,33 @@ class DatabaseService implements ServiceInterface
     /**
      * Fetch collection ordered and filtrated by specified columns for specified page as paginator.
      *
-     * @param int   $page
-     * @param int   $perPage
-     * @param array $filter
-     * @param array $sort
-     * @param array $columns
+     * @param int    $page
+     * @param int    $perPage
+     * @param array  $columns
+     * @param array  $filter
+     * @param array  $sort
+     * @param string $search
      *
      * @return LengthAwarePaginator
      */
-    public function fetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
-    {
-        $this->instance = $this->repository->makeQuery();
-
-        $this->multiFilterBy($filter)->multiSortBy($sort);
+    public function fetch(
+        $page = 1,
+        $perPage = 15,
+        array $columns = ['*'],
+        array $filter = [],
+        array $sort = [],
+        $search = null
+    ) {
+        if (empty($search)) {
+            $this->instance = $this->repository->makeQuery();
+            $this->multiFilterBy($filter)->multiSortBy($sort);
+        } else {
+            $this->instance = $this->repository->search($search);
+        }
 
         $this->parseAliases($this->instance);
 
-        $count = $this->instance->count();
+        $count = $this->countResults($this->instance);
         $items = $this->instance->forPage($page, $perPage)->get($columns);
 
         $options = [
@@ -230,21 +270,54 @@ class DatabaseService implements ServiceInterface
     /**
      * Fetch collection ordered and filtrated by specified columns for specified page.
      *
-     * @param int   $page
-     * @param int   $perPage
-     * @param array $columns
-     * @param array $filter
-     * @param array $sort
+     * @param int    $page
+     * @param int    $perPage
+     * @param array  $columns
+     * @param array  $filter
+     * @param array  $sort
+     * @param string $search
      *
      * @return Collection
      */
-    public function simpleFetch($page = 1, $perPage = 15, array $columns = ['*'], array $filter = [], array $sort = [])
-    {
-        $this->instance = $this->repository->makeQuery();
+    public function simpleFetch(
+        $page = 1,
+        $perPage = 15,
+        array $columns = ['*'],
+        array $filter = [],
+        array $sort = [],
+        $search = null
+    ) {
+        if (is_null($search)) {
+            $this->instance = $this->repository->makeQuery();
+            $this->multiFilterBy($filter)->multiSortBy($sort);
+        } else {
+            $this->instance = $this->repository->search($search);
+        }
 
-        $this->multiFilterBy($filter)->multiSortBy($sort)->parseAliases($this->instance);
+        $this->parseAliases($this->instance);
 
         return $this->instance->forPage($page, $perPage)->get($columns);
+    }
+
+    /**
+     * Counts results for given query.
+     *
+     * @param Builder $query
+     *
+     * @return int
+     */
+    protected function countResults(Builder $query)
+    {
+        $query = clone $query;
+
+        $query->getQuery()->aggregate = ['function' => 'count', 'columns' => $columns = ['*']];
+        $query->getQuery()->orders    = null;
+
+        $results = $query->getQuery()->get($columns);
+
+        if (isset($results[0])) {
+            return array_change_key_case((array) $results[0])['aggregate'];
+        }
     }
 
     /**
@@ -292,8 +365,7 @@ class DatabaseService implements ServiceInterface
 
         foreach ($query->getQuery()->columns as $column) {
             if (preg_match("~AS (\w+)~i", $column, $matches)) {
-                $aliases[$query->getModel()->getTable() . '.' . $matches[1]]
-                    = \DB::raw(str_replace($matches[0], '', $column));
+                $aliases[$matches[1]] = \DB::raw(str_replace($matches[0], '', $column));
             }
         }
 

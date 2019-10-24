@@ -55,14 +55,14 @@ class RepositoryMediator
     protected $transform;
 
     /**
-     * Contains an Criteria service.
+     * Contains an criteria service.
      *
      * @var CriteriaService
      */
     protected $criteria;
 
     /**
-     * Create a new Repositry Mediator instance.
+     * Create a new repository mediator instance.
      *
      * @param Application $app
      * @param Repository  $repository
